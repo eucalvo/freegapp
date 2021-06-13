@@ -4,7 +4,7 @@
         android:label="freegapp"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyB_at9pO8kshfKnrkODh99wLNTE8b-KVN4"/>
+               android:value="@string/GOOGLE_MAPS_API_KEY_ANDROID"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
