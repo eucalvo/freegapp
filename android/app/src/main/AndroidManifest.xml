@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.freegapp">
+    package="com.freegapp.freegapp">
    <application
         android:label="freegapp"
         android:icon="@mipmap/ic_launcher">
