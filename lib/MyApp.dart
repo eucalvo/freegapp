@@ -1,3 +1,4 @@
+// MyApp.dart is the main layout of how the app looks
 import 'package:flutter/material.dart';
 import 'package:freegapp/TheMap.dart';
 import 'package:freegapp/LogIn.dart';
@@ -26,7 +27,7 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   // for bottom navigation bar
   int _selectedIndex = 0;
-  // for bottom navigation bar
+  // Widget array for bottom navigation bar
   static final List<Widget> _widgetOptions = <Widget>[
     TheMap(key: Key('TheMap')),
     LogIn(key: Key('LogIn')),

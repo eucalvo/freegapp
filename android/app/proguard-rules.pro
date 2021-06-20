@@ -1,1 +1,1 @@
--keep class com.example.freegapp.BuildConfig { *; }
+-keep class com.freegapp.freegapp.BuildConfig { *; }
