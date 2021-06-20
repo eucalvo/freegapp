@@ -34,6 +34,11 @@ dependencies:
   flutter_dotenv: ^5.0.0
   flutter_config: ^2.0.0
   google_maps_flutter_platform_interface: ^2.0.4
+  flutter_login: ^2.0.0
+  sqflite: ^2.0.0+3
+  firebase_auth: ^1.4.1
+  cloud_firestore: ^2.2.2
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
