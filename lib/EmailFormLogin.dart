@@ -1,35 +1,13 @@
 import 'package:flutter/material.dart';
-import 'src/LogInError.dart';
 
-class EmailLogin extends StatelessWidget {
-  EmailLogin({
-    Key? key,
-    required this.email,
-    required this.verifyEmail,
-  }) : super(key: key); // Initializes key for subclasses.
-  final String? email;
-  final void Function(
-    //  typedef myFunction = final void Function(String email, void Function(Exception e) error,);
-    String email,
-    void Function(Exception e) error,
-  ) verifyEmail; //  myFunction verifyEmail() = {}
-
-  @override
-  Widget build(BuildContext context) {
-    return EmailForm(
-        callback: (email) => verifyEmail(email,
-            (e) => LogInError().showErrorDialog(context, 'Invalid email', e)));
-  }
-}
-
-class EmailForm extends StatefulWidget {
-  const EmailForm({required this.callback});
+class EmailFormLogin extends StatefulWidget {
+  const EmailFormLogin({required this.callback});
   final void Function(String email) callback;
   @override
   _EmailFormState createState() => _EmailFormState();
 }
 
-class _EmailFormState extends State<EmailForm> {
+class _EmailFormState extends State<EmailFormLogin> {
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   //

@@ -1,7 +1,7 @@
 // MyApp.dart is the main layout of how the app looks
 import 'package:flutter/material.dart';
 import 'package:freegapp/TheMap.dart';
-import 'package:freegapp/EmailLogin.dart';
+import 'package:freegapp/EmailFormLogin.dart';
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
