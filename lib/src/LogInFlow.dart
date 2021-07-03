@@ -50,6 +50,12 @@ class LogInFlow extends StatelessWidget {
         return EmailFormLogin(
             callback: (email) => verifyEmail(
                 email, (e) => _showErrorDialog(context, 'Invalid email', e)));
+      default:
+        return Row(
+          children: const [
+            Text("Internal error, this shouldn't happen..."),
+          ],
+        );
     }
   }
 }
