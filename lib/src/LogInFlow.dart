@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegapp/EmailFormLogin.dart';
+import 'package:freegapp/PasswordFormLogin.dart';
+import 'package:freegapp/Sell.dart';
 
 enum ApplicationLoginState {
   loggedOut,
@@ -50,6 +52,20 @@ class LogInFlow extends StatelessWidget {
         return EmailFormLogin(
             callback: (email) => verifyEmail(
                 email, (e) => _showErrorDialog(context, 'Invalid email', e)));
+      case ApplicationLoginState.password:
+        return PasswordFormLogin(
+          email: email!,
+          login: (email, password) {
+            signInWithEmailAndPassword(email, password,
+                (e) => _showErrorDialog(context, 'Failed to sign in', e));
+          },
+        );
+      case ApplicationLoginState.loggedIn:
+        return Row(
+          children: [
+            Sell(),
+          ],
+        );
       default:
         return Row(
           children: const [
@@ -61,37 +77,36 @@ class LogInFlow extends StatelessWidget {
 }
 
 void _showErrorDialog(BuildContext context, String title, Exception e) {
-    showDialog<void>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            title,
-            style: const TextStyle(fontSize: 24),
-          ),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(
-                  '${(e as dynamic).message}',
-                  style: const TextStyle(fontSize: 18),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                'OK',
-                style: TextStyle(color: Colors.deepPurple),
+  showDialog<void>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text(
+          title,
+          style: const TextStyle(fontSize: 24),
+        ),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text(
+                '${(e as dynamic).message}',
+                style: const TextStyle(fontSize: 18),
               ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text(
+              'OK',
+              style: TextStyle(color: Colors.deepPurple),
             ),
-          ],
-        );
-      },
-    );
-  }
+          ),
+        ],
+      );
+    },
+  );
 }

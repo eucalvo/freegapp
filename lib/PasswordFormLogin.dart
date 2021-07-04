@@ -1,37 +1,8 @@
 import 'src/ApplicationStateLogin.dart';
 import 'package:flutter/material.dart';
-import 'src/LogInError.dart';
 
-class EmailLogin extends StatelessWidget {
-  EmailLogin({
-    Key? key,
-    required this.email,
-    required this.signInWithEmailAndPassword,
-  }) : super(key: key); // Initializes key for subclasses.
-  final String? email;
-  final void Function(
-    String email,
-    String password,
-    void Function(Exception e) error,
-  ) signInWithEmailAndPassword;
-
-  @override
-  Widget build(BuildContext context) {
-    return PasswordForm(
-      email: email!,
-      login: (email, password) {
-        signInWithEmailAndPassword(
-            email,
-            password,
-            (e) =>
-                LogInError().showErrorDialog(context, 'Failed to sign in', e));
-      },
-    );
-  }
-}
-
-class PasswordForm extends StatefulWidget {
-  const PasswordForm({
+class PasswordFormLogin extends StatefulWidget {
+  const PasswordFormLogin({
     required this.login,
     required this.email,
   });
@@ -41,7 +12,7 @@ class PasswordForm extends StatefulWidget {
   _PasswordFormState createState() => _PasswordFormState();
 }
 
-class _PasswordFormState extends State<PasswordForm> {
+class _PasswordFormState extends State<PasswordFormLogin> {
   final _formKey = GlobalKey<FormState>(debugLabel: '_PasswordFormState');
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -56,7 +27,6 @@ class _PasswordFormState extends State<PasswordForm> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Header('Sign in'),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(
