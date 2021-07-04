@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freegapp/RegisterFormLogin.dart';
+import 'src/style_widgets.dart';
 
 class EmailFormLogin extends StatefulWidget {
   const EmailFormLogin({required this.callback});
@@ -24,6 +26,7 @@ class _EmailFormState extends State<EmailFormLogin> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            const Header('Sign in with email'),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: TextFormField(
@@ -45,7 +48,7 @@ class _EmailFormState extends State<EmailFormLogin> {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical: 16.0, horizontal: 30),
-                  child: ElevatedButton(
+                  child: StyledButton(
                     onPressed: () async {
                       // The FormState class contains the validate() method.
                       // When the validate() method is called, it runs the validator() function
@@ -60,6 +63,32 @@ class _EmailFormState extends State<EmailFormLogin> {
                       }
                     },
                     child: const Text('NEXT'),
+                  ),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.all(16.0),
+                    primary: Colors.white,
+                    textStyle: const TextStyle(fontSize: 20),
+                  ),
+                  onPressed: () {},
+                  child: RegisterFormLogin(
+                    email: email!,
+                    cancel: () {
+                      cancelRegistration();
+                    },
+                    registerAccount: (
+                      email,
+                      displayName,
+                      password,
+                    ) {
+                      registerAccount(
+                          email,
+                          displayName,
+                          password,
+                          (e) => _showErrorDialog(
+                              context, 'Failed to create account', e));
+                    },
                   ),
                 ),
               ],

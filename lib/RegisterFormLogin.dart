@@ -1,21 +1,24 @@
-import 'src/ApplicationStateLogin.dart';
 import 'package:flutter/material.dart';
 import 'src/style_widgets.dart';
 
-class PasswordFormLogin extends StatefulWidget {
-  const PasswordFormLogin({
-    required this.login,
+class RegisterFormLogin extends StatefulWidget {
+  const RegisterFormLogin({
+    required this.registerAccount,
+    required this.cancel,
     required this.email,
   });
   final String email;
-  final void Function(String email, String password) login;
+  final void Function(String email, String displayName, String password)
+      registerAccount;
+  final void Function() cancel;
   @override
-  _PasswordFormState createState() => _PasswordFormState();
+  _RegisterFormState createState() => _RegisterFormState();
 }
 
-class _PasswordFormState extends State<PasswordFormLogin> {
-  final _formKey = GlobalKey<FormState>(debugLabel: '_PasswordFormState');
+class _RegisterFormState extends State<RegisterFormLogin> {
+  final _formKey = GlobalKey<FormState>(debugLabel: '_RegisterFormState');
   final _emailController = TextEditingController();
+  final _displayNameController = TextEditingController();
   final _passwordController = TextEditingController();
 
   @override
@@ -28,7 +31,7 @@ class _PasswordFormState extends State<PasswordFormLogin> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Header('Sign in'),
+        const Header('Create account'),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(
@@ -46,6 +49,21 @@ class _PasswordFormState extends State<PasswordFormLogin> {
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'Enter your email address to continue';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: TextFormField(
+                    controller: _displayNameController,
+                    decoration: const InputDecoration(
+                      hintText: 'First & last name',
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter your account name';
                       }
                       return null;
                     },
@@ -72,17 +90,22 @@ class _PasswordFormState extends State<PasswordFormLogin> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
+                      TextButton(
+                        onPressed: widget.cancel,
+                        child: const Text('CANCEL'),
+                      ),
                       const SizedBox(width: 16),
                       StyledButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            widget.login(
+                            widget.registerAccount(
                               _emailController.text,
+                              _displayNameController.text,
                               _passwordController.text,
                             );
                           }
                         },
-                        child: const Text('SIGN IN'),
+                        child: const Text('SAVE'),
                       ),
                       const SizedBox(width: 30),
                     ],

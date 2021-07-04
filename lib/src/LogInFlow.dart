@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freegapp/EmailFormLogin.dart';
 import 'package:freegapp/PasswordFormLogin.dart';
 import 'package:freegapp/Sell.dart';
+import 'style_widgets.dart';
 
 enum ApplicationLoginState {
   loggedOut,
@@ -61,11 +62,7 @@ class LogInFlow extends StatelessWidget {
           },
         );
       case ApplicationLoginState.loggedIn:
-        return Row(
-          children: [
-            Sell(),
-          ],
-        );
+        return Sell();
       default:
         return Row(
           children: const [
@@ -96,7 +93,7 @@ void _showErrorDialog(BuildContext context, String title, Exception e) {
           ),
         ),
         actions: <Widget>[
-          ElevatedButton(
+          StyledButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
