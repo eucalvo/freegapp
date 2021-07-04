@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:freegapp/RegisterFormLogin.dart';
 import 'src/style_widgets.dart';
 
 class EmailFormLogin extends StatefulWidget {
@@ -63,32 +62,6 @@ class _EmailFormState extends State<EmailFormLogin> {
                       }
                     },
                     child: const Text('NEXT'),
-                  ),
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.all(16.0),
-                    primary: Colors.white,
-                    textStyle: const TextStyle(fontSize: 20),
-                  ),
-                  onPressed: () {},
-                  child: RegisterFormLogin(
-                    email: email!,
-                    cancel: () {
-                      cancelRegistration();
-                    },
-                    registerAccount: (
-                      email,
-                      displayName,
-                      password,
-                    ) {
-                      registerAccount(
-                          email,
-                          displayName,
-                          password,
-                          (e) => _showErrorDialog(
-                              context, 'Failed to create account', e));
-                    },
                   ),
                 ),
               ],

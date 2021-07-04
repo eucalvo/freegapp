@@ -1,7 +1,9 @@
 // MyApp.dart is the main layout of how the app looks
 import 'package:flutter/material.dart';
 import 'package:freegapp/TheMap.dart';
-import 'package:freegapp/Sell.dart';
+import 'package:freegapp/src/ApplicationStateLogin.dart';
+import 'package:freegapp/src/LogInFlow.dart';
+import 'package:provider/provider.dart';
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -30,7 +32,18 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   // Widget array for bottom navigation bar
   static final List<Widget> _widgetOptions = <Widget>[
     TheMap(key: Key('TheMap')),
-    Sell(key: Key('Sell')),
+    Consumer<ApplicationStateLogin>(
+      builder: (context, appState, _) => LogInFlow(
+        email: appState.email,
+        loginState: appState.loginState,
+        startLoginFlow: appState.startLoginFlow,
+        verifyEmail: appState.verifyEmail,
+        signInWithEmailAndPassword: appState.signInWithEmailAndPassword,
+        cancelRegistration: appState.cancelRegistration,
+        registerAccount: appState.registerAccount,
+        signOut: appState.signOut,
+      ),
+    ),
   ];
   // for bottom navigation bar
   void _onItemTapped(int index) {
