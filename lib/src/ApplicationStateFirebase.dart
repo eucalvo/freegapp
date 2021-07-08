@@ -1,10 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'LogInFlow.dart';
+import 'LoginFlow.dart';
 
-class ApplicationStateLogin extends ChangeNotifier {
-  ApplicationStateLogin() {
+class ApplicationStateFirebase extends ChangeNotifier {
+  ApplicationStateFirebase() {
     init();
   }
 

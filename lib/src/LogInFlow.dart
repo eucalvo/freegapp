@@ -13,8 +13,8 @@ enum ApplicationLoginState {
   loggedIn,
 }
 
-class LogInFlow extends StatelessWidget {
-  const LogInFlow({
+class LoginFlow extends StatelessWidget {
+  const LoginFlow({
     required this.loginState,
     required this.email,
     required this.startLoginFlow,

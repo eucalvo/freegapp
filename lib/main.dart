@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:provider/provider.dart';
-import 'src/ApplicationStateLogin.dart';
-import 'package:freegapp/TheMap.dart';
-import 'package:freegapp/src/ApplicationStateLogin.dart';
-import 'package:freegapp/src/LogInFlow.dart';
+import 'TheMap.dart';
+import 'src/ApplicationStateFirebase.dart';
+import 'src/LoginFlow.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Required by FlutterConfig
@@ -12,7 +11,7 @@ void main() async {
 
   runApp(
     ChangeNotifierProvider(
-      create: (context) => ApplicationStateLogin(),
+      create: (context) => ApplicationStateFirebase(),
       builder: (context, _) => MyApp(),
     ),
   );
@@ -45,8 +44,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   // Widget array for bottom navigation bar
   static final List<Widget> _widgetOptions = <Widget>[
     TheMap(key: Key('TheMap')),
-    Consumer<ApplicationStateLogin>(
-      builder: (context, appState, _) => LogInFlow(
+    Consumer<ApplicationStateFirebase>(
+      builder: (context, appState, _) => LoginFlow(
           email: appState.email,
           loginState: appState.loginState,
           startLoginFlow: appState.startLoginFlow,
@@ -55,7 +54,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           cancelRegistration: appState.cancelRegistration,
           registerAccount: appState.registerAccount,
           signOut: appState.signOut,
-          key: Key('LogInFlow')),
+          key: Key('LoginFlow')),
     ),
   ];
   // for bottom navigation bar

@@ -22,7 +22,7 @@ void main() {
     await tester.tap(find.text('icon'));
     // Rebuild the widget after the state has changed.
     await tester.pump();
-    expect(find.byKey(Key('LogInFlow')), findsOneWidget);
+    expect(find.byKey(Key('LoginFlow')), findsOneWidget);
     await tester.tap(find.text('Map'));
     await tester.pump();
     expect(find.byKey(Key('TheMap')), findsOneWidget);
