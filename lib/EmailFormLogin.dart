@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'src/style_widgets.dart';
 
 class EmailFormLogin extends StatefulWidget {
-  const EmailFormLogin({required this.callback});
+  const EmailFormLogin({
+    required this.callback,
+    Key? key,
+  }) : super(key: key);
   final void Function(String email) callback;
+
   @override
   _EmailFormState createState() => _EmailFormState();
 }
@@ -18,24 +22,32 @@ class _EmailFormState extends State<EmailFormLogin> {
   final _controller = TextEditingController();
 
   @override
+  void dispose() {
+    _controller.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(children: <Widget>[
       Form(
         key: _formKey,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Header('Sign in with email'),
+            const Header('Sign in / Register'),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: TextFormField(
                 controller: _controller,
+                keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
                   hintText: 'Enter your email',
+                  prefixIcon: Icon(Icons.mail),
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Enter your email address to continue';
+                    return 'Enter your email address';
                   }
                   return null;
                 },
@@ -68,7 +80,7 @@ class _EmailFormState extends State<EmailFormLogin> {
             ),
           ],
         ),
-      )
+      ),
     ]);
   }
 }

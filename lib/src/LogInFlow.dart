@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freegapp/EmailFormLogin.dart';
 import 'package:freegapp/PasswordFormLogin.dart';
 import 'package:freegapp/Sell.dart';
+import 'package:freegapp/RegisterFormLogin.dart';
 import 'style_widgets.dart';
 
 enum ApplicationLoginState {
@@ -22,7 +23,8 @@ class LogInFlow extends StatelessWidget {
     required this.cancelRegistration,
     required this.registerAccount,
     required this.signOut,
-  });
+    Key? key,
+  }) : super(key: key);
 
   final ApplicationLoginState loginState;
   final String? email;
@@ -51,18 +53,45 @@ class LogInFlow extends StatelessWidget {
     switch (loginState) {
       case ApplicationLoginState.loggedOut:
         return EmailFormLogin(
+            key: Key('EmailFormLogin'),
             callback: (email) => verifyEmail(
                 email, (e) => _showErrorDialog(context, 'Invalid email', e)));
       case ApplicationLoginState.password:
         return PasswordFormLogin(
+          key: Key('PasswordFormLogin'),
           email: email!,
           login: (email, password) {
             signInWithEmailAndPassword(email, password,
                 (e) => _showErrorDialog(context, 'Failed to sign in', e));
           },
         );
+      case ApplicationLoginState.register:
+        return RegisterFormLogin(
+          key: Key('RegisterFormLogin'),
+          email: email!,
+          cancel: () {
+            cancelRegistration();
+          },
+          registerAccount: (
+            email,
+            displayName,
+            password,
+          ) {
+            registerAccount(
+                email,
+                displayName,
+                password,
+                (e) =>
+                    _showErrorDialog(context, 'Failed to create account', e));
+          },
+        );
       case ApplicationLoginState.loggedIn:
-        return Sell();
+        return Sell(
+          logout: () {
+            signOut();
+          },
+          key: Key('Sell'),
+        );
       default:
         return Row(
           children: const [

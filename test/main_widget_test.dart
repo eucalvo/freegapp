@@ -7,7 +7,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:freegapp/MyApp.dart';
+import 'package:freegapp/main.dart';
 
 void main() {
   // The WidgetTester allows building and interacting with widgets in a test environment.
@@ -22,7 +22,7 @@ void main() {
     await tester.tap(find.text('icon'));
     // Rebuild the widget after the state has changed.
     await tester.pump();
-    expect(find.byKey(Key('LogIn')), findsOneWidget);
+    expect(find.byKey(Key('LogInFlow')), findsOneWidget);
     await tester.tap(find.text('Map'));
     await tester.pump();
     expect(find.byKey(Key('TheMap')), findsOneWidget);

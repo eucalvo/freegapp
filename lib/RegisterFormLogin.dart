@@ -6,7 +6,8 @@ class RegisterFormLogin extends StatefulWidget {
     required this.registerAccount,
     required this.cancel,
     required this.email,
-  });
+    Key? key,
+  }) : super(key: key);
   final String email;
   final void Function(String email, String displayName, String password)
       registerAccount;
@@ -31,7 +32,7 @@ class _RegisterFormState extends State<RegisterFormLogin> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Header('Create account'),
+        const Header('Create Account'),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(

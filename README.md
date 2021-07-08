@@ -1,2 +1,3 @@
 # freegapp
-Making lots of food? This app allows you to sell meals you've made to nearby customers!
+
+Google maps requires API keys for ios and android and app will not run without those API keys. Read the ".env_example" file.

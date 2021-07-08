@@ -5,7 +5,8 @@ class PasswordFormLogin extends StatefulWidget {
   const PasswordFormLogin({
     required this.login,
     required this.email,
-  });
+    Key? key,
+  }) : super(key: key);
   final String email;
   final void Function(String email, String password) login;
   @override
