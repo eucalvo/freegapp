@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'src/style_widgets.dart';
+import 'package:freegapp/src/style_widgets.dart';
 
 class PasswordFormLogin extends StatefulWidget {
   const PasswordFormLogin({

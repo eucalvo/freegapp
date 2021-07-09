@@ -3,7 +3,7 @@ import 'package:freegapp/EmailFormLogin.dart';
 import 'package:freegapp/PasswordFormLogin.dart';
 import 'package:freegapp/Sell.dart';
 import 'package:freegapp/RegisterFormLogin.dart';
-import 'style_widgets.dart';
+import 'package:freegapp/src/style_widgets.dart';
 
 enum ApplicationLoginState {
   loggedOut,

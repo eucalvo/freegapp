@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:provider/provider.dart';
-import 'TheMap.dart';
-import 'src/ApplicationStateFirebase.dart';
-import 'src/LoginFlow.dart';
+import 'package:freegapp/TheMap.dart';
+import 'package:freegapp/src/ApplicationStateFirebase.dart';
+import 'package:freegapp/src/LoginFlow.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Required by FlutterConfig
