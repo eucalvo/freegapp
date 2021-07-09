@@ -30,7 +30,8 @@ class _EmailFormState extends State<EmailFormLogin> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: <Widget>[
+    return Scaffold(
+        body: Column(children: <Widget>[
       Form(
         key: _formKey,
         child: Column(
@@ -81,6 +82,6 @@ class _EmailFormState extends State<EmailFormLogin> {
           ],
         ),
       ),
-    ]);
+    ]));
   }
 }

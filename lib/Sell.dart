@@ -12,9 +12,10 @@ class Sell extends StatefulWidget {
 class _SellState extends State<Sell> {
   @override
   Widget build(BuildContext context) {
-    return TextButton(
+    return Scaffold(
+        body: TextButton(
       onPressed: widget.logout,
       child: const Text('Logout'),
-    );
+    ));
   }
 }
