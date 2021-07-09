@@ -6,6 +6,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
+import 'package:freegapp/src/ApplicationStateFirebase.dart';
 
 import 'package:freegapp/main.dart';
 
@@ -14,7 +16,10 @@ void main() {
   testWidgets('MyStatefulWidget creates a default widget as a homepage',
       (WidgetTester tester) async {
     // Create the widget by telling the tester to build it. Also triggers a frame.
-    await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(ChangeNotifierProvider(
+      create: (context) => ApplicationStateFirebase(),
+      builder: (context, _) => MyApp(),
+    ));
     expect(find.byKey(Key('default')), findsOneWidget);
     // navigationIndexBar starts at 0 so TheMap should be the widget being displayed.
     expect(find.byKey(Key('TheMap')), findsOneWidget);
