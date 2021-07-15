@@ -55,6 +55,7 @@ class _PasswordFormState extends State<PasswordFormLogin> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: TextFormField(
+                    key: Key('PasswordFormLoginTextFormField'),
                     controller: _passwordController,
                     decoration: const InputDecoration(
                       hintText: 'Password',
@@ -74,7 +75,7 @@ class _PasswordFormState extends State<PasswordFormLogin> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       const SizedBox(width: 16),
-                      StyledButton(
+                      ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             widget.login(

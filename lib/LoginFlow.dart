@@ -107,6 +107,7 @@ void _showErrorDialog(BuildContext context, String title, Exception e) {
     context: context,
     builder: (context) {
       return AlertDialog(
+        key: Key('AlertDialogLoginFlow'),
         title: Text(
           title,
           style: const TextStyle(fontSize: 24),

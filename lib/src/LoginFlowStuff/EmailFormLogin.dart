@@ -22,13 +22,6 @@ class _EmailFormState extends State<EmailFormLogin> {
   final _controller = TextEditingController();
 
   @override
-  void dispose() {
-    _controller.dispose();
-
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(children: <Widget>[
@@ -60,7 +53,7 @@ class _EmailFormState extends State<EmailFormLogin> {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical: 16.0, horizontal: 30),
-                  child: StyledButton(
+                  child: ElevatedButton(
                     onPressed: () async {
                       // The FormState class contains the validate() method.
                       // When the validate() method is called, it runs the validator() function
