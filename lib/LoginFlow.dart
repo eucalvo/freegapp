@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:freegapp/EmailFormLogin.dart';
-import 'package:freegapp/PasswordFormLogin.dart';
+import 'package:freegapp/src/LoginFlowStuff/EmailFormLogin.dart';
+import 'package:freegapp/src/LoginFlowStuff/PasswordFormLogin.dart';
 import 'package:freegapp/Sell.dart';
-import 'package:freegapp/RegisterFormLogin.dart';
-import 'package:freegapp/src/style_widgets.dart';
+import 'package:freegapp/src/LoginFlowStuff/RegisterFormLogin.dart';
 
 enum ApplicationLoginState {
   loggedOut,
@@ -107,6 +106,7 @@ void _showErrorDialog(BuildContext context, String title, Exception e) {
     context: context,
     builder: (context) {
       return AlertDialog(
+        key: Key('AlertDialogLoginFlow'),
         title: Text(
           title,
           style: const TextStyle(fontSize: 24),
@@ -122,7 +122,7 @@ void _showErrorDialog(BuildContext context, String title, Exception e) {
           ),
         ),
         actions: <Widget>[
-          StyledButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
             },

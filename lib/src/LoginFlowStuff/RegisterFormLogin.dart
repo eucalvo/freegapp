@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:freegapp/src/style_widgets.dart';
 
-class PasswordFormLogin extends StatefulWidget {
-  const PasswordFormLogin({
-    required this.login,
+class RegisterFormLogin extends StatefulWidget {
+  const RegisterFormLogin({
+    required this.registerAccount,
+    required this.cancel,
     required this.email,
     Key? key,
   }) : super(key: key);
   final String email;
-  final void Function(String email, String password) login;
+  final void Function(String email, String displayName, String password)
+      registerAccount;
+  final void Function() cancel;
   @override
-  _PasswordFormState createState() => _PasswordFormState();
+  _RegisterFormState createState() => _RegisterFormState();
 }
 
-class _PasswordFormState extends State<PasswordFormLogin> {
-  final _formKey = GlobalKey<FormState>(debugLabel: '_PasswordFormState');
+class _RegisterFormState extends State<RegisterFormLogin> {
+  final _formKey = GlobalKey<FormState>(debugLabel: '_RegisterFormState');
   final _emailController = TextEditingController();
+  final _displayNameController = TextEditingController();
   final _passwordController = TextEditingController();
 
   @override
@@ -26,9 +30,10 @@ class _PasswordFormState extends State<PasswordFormLogin> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Scaffold(
+        body: Column(
       children: [
-        const Header('Sign in'),
+        const Header('Create Account'),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(
@@ -54,6 +59,23 @@ class _PasswordFormState extends State<PasswordFormLogin> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: TextFormField(
+                    key: Key('DisplayNameNameRegisterFormLogin'),
+                    controller: _displayNameController,
+                    decoration: const InputDecoration(
+                      hintText: 'First & last name',
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter your account name';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: TextFormField(
+                    key: Key('PasswordRegisterFormLogin'),
                     controller: _passwordController,
                     decoration: const InputDecoration(
                       hintText: 'Password',
@@ -72,17 +94,22 @@ class _PasswordFormState extends State<PasswordFormLogin> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
+                      TextButton(
+                        onPressed: widget.cancel,
+                        child: const Text('CANCEL'),
+                      ),
                       const SizedBox(width: 16),
-                      StyledButton(
+                      ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            widget.login(
+                            widget.registerAccount(
                               _emailController.text,
+                              _displayNameController.text,
                               _passwordController.text,
                             );
                           }
                         },
-                        child: const Text('SIGN IN'),
+                        child: const Text('SAVE'),
                       ),
                       const SizedBox(width: 30),
                     ],
@@ -93,6 +120,6 @@ class _PasswordFormState extends State<PasswordFormLogin> {
           ),
         ),
       ],
-    );
+    ));
   }
 }
