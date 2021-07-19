@@ -1,41 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth_platform_interface/firebase_auth_platform_interface.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
+import 'package:firebase_auth_platform_interface/firebase_auth_platform_interface.dart';
 // ignore: implementation_imports
 import 'package:firebase_auth_mocks/src/mock_user_credential.dart';
 
 import 'package:freegapp/LoginFlow.dart';
-
-final tUser = MockUser(
-  isAnonymous: false,
-  uid: 'T3STU1D',
-  email: 'bob@thebuilder.com',
-  displayName: 'Bob Builder',
-  phoneNumber: '0800 I CAN FIX IT',
-  photoURL: 'http://photos.url/bobbie.jpg',
-  refreshToken: 'some_long_token',
-);
-
-final auth = MockFirebaseAuth(mockUser: tUser);
-final passwordError = FirebaseAuthException(
-  code: 'wrong-password:',
-  message: 'The password entered is incorrect',
-);
-final emailError = FirebaseAuthException(
-  code: 'invalid-email:',
-  message: 'Email is badly formatted',
-);
-Future<MockUserCredential> createUserWithEmailAndPassword(
-    {required String email, required String password}) async {
-  return MockUserCredential(false, mockUser: tUser);
-}
-
-Future<void> updateDisplayName(String? displayName) {
-  // pretend to updateDisplayName
-  return tUser.reload();
-}
 
 void main() {
 // TextField widgets require a Material widget ancestor.
@@ -64,6 +35,12 @@ void main() {
                     key: Key('LoginFlow'))))));
     expect(find.byKey(Key('EmailFormLogin')), findsOneWidget);
     // Enter 'bob@thebuilder.com' into the TextField.
+    await tester.enterText(find.byType(TextFormField), 'bob');
+    await tester.tap(find.byType(ElevatedButton));
+    await tester.pump();
+    expect(find.byKey(Key('AlertDialogLoginFlow')), findsOneWidget);
+    await tester.tap(find.text('OK'));
+    await tester.pump();
     await tester.enterText(find.byType(TextFormField), 'bob@thebuilder.com');
     await tester.tap(find.byType(ElevatedButton));
     await tester.pump();
@@ -74,6 +51,7 @@ void main() {
     await tester.pump();
     expect(find.byKey(Key('AlertDialogLoginFlow')), findsOneWidget);
     await tester.tap(find.text('OK'));
+    await tester.pump();
     await tester.enterText(
         find.byKey(Key('PasswordFormLoginTextFormField')), 'T3STU1D');
     await tester.tap(find.text('SIGN IN'));
@@ -102,6 +80,12 @@ void main() {
     await tester.tap(find.byType(ElevatedButton));
     await tester.pump();
     expect(find.byKey(Key('RegisterFormLogin')), findsOneWidget);
+    await tester.tap(find.text('CANCEL'));
+    await tester.pump();
+    expect(find.byKey(Key('EmailFormLogin')), findsOneWidget);
+    await tester.enterText(find.byType(TextFormField), 'dom@thebuilder.com');
+    await tester.tap(find.byType(ElevatedButton));
+    await tester.pump();
     await tester.enterText(
         find.byKey(Key('DisplayNameNameRegisterFormLogin')), 'Dom Builder');
     await tester.enterText(
@@ -110,6 +94,35 @@ void main() {
     await tester.pump();
     expect(find.byKey(Key('Sell')), findsOneWidget);
   });
+}
+
+final tUser = MockUser(
+  isAnonymous: false,
+  uid: 'T3STU1D',
+  email: 'bob@thebuilder.com',
+  displayName: 'Bob Builder',
+  phoneNumber: '0800 I CAN FIX IT',
+  photoURL: 'http://photos.url/bobbie.jpg',
+  refreshToken: 'some_long_token',
+);
+
+final auth = MockFirebaseAuth(mockUser: tUser);
+final passwordError = FirebaseAuthException(
+  code: 'wrong-password:',
+  message: 'The password entered is incorrect',
+);
+final emailError = FirebaseAuthException(
+  code: 'invalid-email:',
+  message: 'Email is badly formatted',
+);
+Future<MockUserCredential> createUserWithEmailAndPassword(
+    {required String email, required String password}) async {
+  return MockUserCredential(false, mockUser: tUser);
+}
+
+Future<void> updateDisplayName(String? displayName) {
+  // pretend to updateDisplayName
+  return tUser.reload();
 }
 
 class ApplicationState extends ChangeNotifier {
