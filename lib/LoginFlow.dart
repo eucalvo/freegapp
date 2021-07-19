@@ -3,7 +3,6 @@ import 'package:freegapp/src/LoginFlowStuff/EmailFormLogin.dart';
 import 'package:freegapp/src/LoginFlowStuff/PasswordFormLogin.dart';
 import 'package:freegapp/Sell.dart';
 import 'package:freegapp/src/LoginFlowStuff/RegisterFormLogin.dart';
-import 'package:freegapp/src/style_widgets.dart';
 
 enum ApplicationLoginState {
   loggedOut,
@@ -123,7 +122,7 @@ void _showErrorDialog(BuildContext context, String title, Exception e) {
           ),
         ),
         actions: <Widget>[
-          StyledButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
             },

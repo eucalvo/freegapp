@@ -59,6 +59,7 @@ class _RegisterFormState extends State<RegisterFormLogin> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: TextFormField(
+                    key: Key('DisplayNameNameRegisterFormLogin'),
                     controller: _displayNameController,
                     decoration: const InputDecoration(
                       hintText: 'First & last name',
@@ -74,6 +75,7 @@ class _RegisterFormState extends State<RegisterFormLogin> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: TextFormField(
+                    key: Key('PasswordRegisterFormLogin'),
                     controller: _passwordController,
                     decoration: const InputDecoration(
                       hintText: 'Password',
@@ -97,7 +99,7 @@ class _RegisterFormState extends State<RegisterFormLogin> {
                         child: const Text('CANCEL'),
                       ),
                       const SizedBox(width: 16),
-                      StyledButton(
+                      ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             widget.registerAccount(
