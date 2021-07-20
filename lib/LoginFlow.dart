@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:freegapp/src/LoginFlowStuff/EmailFormLogin.dart';
-import 'package:freegapp/src/LoginFlowStuff/PasswordFormLogin.dart';
+import 'package:freegapp/src/LoginFlowForms/EmailFormLogin.dart';
+import 'package:freegapp/src/LoginFlowForms/PasswordFormLogin.dart';
 import 'package:freegapp/Sell.dart';
-import 'package:freegapp/src/LoginFlowStuff/RegisterFormLogin.dart';
+import 'package:freegapp/src/LoginFlowForms/RegisterFormLogin.dart';
 
 enum ApplicationLoginState {
   loggedOut,
