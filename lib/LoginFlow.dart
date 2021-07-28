@@ -28,11 +28,11 @@ class LoginFlow extends StatelessWidget {
   final ApplicationLoginState loginState;
   final String? email;
   final void Function() startLoginFlow;
-  //  typedef myFunction = final void Function(String email, void Function(Exception e) error,);
+  //  typedef verifyEmail = final void Function(String email, void Function(Exception e) error,);
   final void Function(
     String email,
     void Function(Exception e) error,
-  ) verifyEmail; //  myFunction verifyEmail() = {}
+  ) verifyEmail;
   final void Function(
     String email,
     String password,
