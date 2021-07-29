@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegapp/src/LoginFlowForms/EmailFormLogin.dart';
 import 'package:freegapp/src/LoginFlowForms/PasswordFormLogin.dart';
-import 'package:freegapp/Sell.dart';
+import 'package:freegapp/Selling.dart';
 import 'package:freegapp/src/LoginFlowForms/RegisterFormLogin.dart';
 
 enum ApplicationLoginState {
@@ -85,7 +85,7 @@ class LoginFlow extends StatelessWidget {
           },
         );
       case ApplicationLoginState.loggedIn:
-        return Sell(
+        return Selling(
           logout: () {
             signOut();
           },
