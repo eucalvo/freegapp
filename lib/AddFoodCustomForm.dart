@@ -5,28 +5,15 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ImageBar extends StatelessWidget {
-  const ImageBar({Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    var screenWidth = MediaQuery.of(context).size.width;
-    return SafeArea(
-        child: Container(
-      height: 80,
-      width: screenWidth,
-      child: ImageRow(),
-    ));
-  }
-}
-
-class ImageRow extends StatefulWidget {
-  ImageRow({Key? key}) : super(key: key); // Initializes key for subclasses.
+class AddFoodCustomForm extends StatefulWidget {
+  AddFoodCustomForm({Key? key})
+      : super(key: key); // Initializes key for subclasses.
 
   @override
-  _ImageRowState createState() => _ImageRowState();
+  _AddFoodCustomFormState createState() => _AddFoodCustomFormState();
 }
 
-class _ImageRowState extends State<ImageRow> {
+class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
   List<XFile>? _imageFileList;
   set _imageFile(XFile? value) {
     _imageFileList = value == null ? null : [value];
@@ -35,23 +22,66 @@ class _ImageRowState extends State<ImageRow> {
   dynamic _pickImageError;
   String? _retrieveDataError;
   final ImagePicker _picker = ImagePicker();
+  final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
+  final costController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    titleController.dispose();
+    descriptionController.dispose();
+    costController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      FloatingActionButton(
+    var screenWidth = MediaQuery.of(context).size.width;
+    return Scaffold(
+        body: Column(children: [
+      Column(children: [
+        SafeArea(
+            child: Container(
+                height: 80,
+                width: screenWidth,
+                child: Row(children: [
+                  FloatingActionButton(
+                    onPressed: () {
+                      _onImageButtonPressed(
+                        ImageSource.gallery,
+                        context: context,
+                      );
+                    },
+                    heroTag: 'image1',
+                    tooltip: 'Pick Multiple Image from gallery',
+                    child: const Icon(Icons.photo_library),
+                  ),
+                  _previewImages(),
+                ]))),
+        TextField(
+          controller: titleController,
+          decoration:
+              InputDecoration(border: OutlineInputBorder(), hintText: 'title'),
+        ),
+        TextField(
+          controller: descriptionController,
+          decoration: InputDecoration(
+              border: OutlineInputBorder(), hintText: 'description'),
+        ),
+        TextField(
+          controller: costController,
+          decoration:
+              InputDecoration(border: OutlineInputBorder(), hintText: 'cost'),
+        )
+      ]),
+      TextButton(
         onPressed: () {
-          _onImageButtonPressed(
-            ImageSource.gallery,
-            context: context,
-          );
+          Navigator.pop(context);
         },
-        heroTag: 'image1',
-        tooltip: 'Pick Multiple Image from gallery',
-        child: const Icon(Icons.photo_library),
+        child: const Text('CANCEL'),
       ),
-      _previewImages(),
-    ]);
+    ]));
   }
 
   void _onImageButtonPressed(ImageSource source,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freegapp/FoodForm.dart';
+import 'package:freegapp/AddFoodCustomForm.dart';
 
 class Selling extends StatefulWidget {
   Selling({required this.logout, Key? key})
@@ -31,7 +31,7 @@ class _SellingState extends State<Selling> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => FoodForm()),
+                MaterialPageRoute(builder: (context) => AddFoodCustomForm()),
               );
             },
             child: Icon(Icons.add)),
