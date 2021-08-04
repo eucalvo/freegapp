@@ -4,6 +4,11 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
+import 'dart:async';
+
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 class AddFoodCustomForm extends StatefulWidget {
   AddFoodCustomForm({Key? key})
@@ -25,6 +30,7 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final costController = TextEditingController();
+  var uuid = Uuid();
 
   @override
   void dispose() {
@@ -80,6 +86,16 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
           Navigator.pop(context);
         },
         child: const Text('CANCEL'),
+      ),
+      FloatingActionButton(
+        onPressed: () async {
+          var id = uuid.v4();
+          await insertDog(toMap(id, titleController.text,
+              descriptionController.text, costController.text));
+          var food = await foods(id);
+          print(food);
+        },
+        child: const Text('Upload'),
       ),
     ]));
   }
@@ -151,5 +167,51 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
     } else {
       _retrieveDataError = response.exception!.code;
     }
+  }
+
+  Future<void> insertDog(sell) async {
+    final database = openDatabase(
+      // Set the path to the database. Note: Using the `join` function from the
+      // `path` package is best practice to ensure the path is correctly
+      // constructed for each platform.
+      join(await getDatabasesPath(), 'freegapp.db'),
+    );
+    // Get a reference to the database.
+    final db = await database;
+
+    // Insert the Dog into the correct table. You might also specify the
+    // `conflictAlgorithm` to use in case the same dog is inserted twice.
+    //
+    // In this case, replace any previous data.
+    await db.insert(
+      'food',
+      sell,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+// A method that retrieves all the dogs from the dogs table.
+  Future<List<Map<String, dynamic>>> foods(id) async {
+    final database = openDatabase(
+      // Set the path to the database. Note: Using the `join` function from the
+      // `path` package is best practice to ensure the path is correctly
+      // constructed for each platform.
+      join(await getDatabasesPath(), 'freegapp.db'),
+    );
+    // Get a reference to the database.
+    final db = await database;
+
+    // Query the table for all The Dogs.
+    final List<Map<String, dynamic>> maps = await db.query('food');
+    return maps;
+  }
+
+  Map<String, dynamic> toMap(id, title, description, cost) {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'cost': cost,
+    };
   }
 }
