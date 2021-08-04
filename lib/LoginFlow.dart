@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegapp/src/LoginFlowForms/EmailFormLogin.dart';
 import 'package:freegapp/src/LoginFlowForms/PasswordFormLogin.dart';
-import 'package:freegapp/Sell.dart';
+import 'package:freegapp/Selling.dart';
 import 'package:freegapp/src/LoginFlowForms/RegisterFormLogin.dart';
 
 enum ApplicationLoginState {
@@ -28,11 +28,11 @@ class LoginFlow extends StatelessWidget {
   final ApplicationLoginState loginState;
   final String? email;
   final void Function() startLoginFlow;
-  //  typedef myFunction = final void Function(String email, void Function(Exception e) error,);
+  //  typedef verifyEmail = final void Function(String email, void Function(Exception e) error,);
   final void Function(
     String email,
     void Function(Exception e) error,
-  ) verifyEmail; //  myFunction verifyEmail() = {}
+  ) verifyEmail;
   final void Function(
     String email,
     String password,
@@ -85,7 +85,7 @@ class LoginFlow extends StatelessWidget {
           },
         );
       case ApplicationLoginState.loggedIn:
-        return Sell(
+        return Selling(
           logout: () {
             signOut();
           },
