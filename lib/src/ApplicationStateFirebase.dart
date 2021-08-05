@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegapp/LoginFlow.dart';
 
+import 'dart:async'; // new
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ApplicationStateFirebase extends ChangeNotifier {
   ApplicationStateFirebase() {
     init();
@@ -85,4 +88,28 @@ class ApplicationStateFirebase extends ChangeNotifier {
   void signOut() {
     FirebaseAuth.instance.signOut();
   }
+
+  // Add from here
+  Future<DocumentReference> addMessageToGuestBook(
+      String id,
+      String title,
+      String description,
+      double cost,
+      String image1,
+      String? image2,
+      String? image3) {
+    return FirebaseFirestore.instance.collection('food').add({
+      'id': id,
+      'title': title,
+      'description': description,
+      'cost': cost,
+      'image1': image1,
+      'image2': image2,
+      'image3': image3,
+      'name': FirebaseAuth.instance.currentUser!.displayName,
+      'userId': FirebaseAuth.instance.currentUser!.uid,
+      //'timestamp': DateTime.now().millisecondsSinceEpoch,
+    });
+  }
+  // To here
 }

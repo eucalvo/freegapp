@@ -3,10 +3,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:freegapp/src/ApplicationStateFirebase.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
-import 'dart:async';
-
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -89,9 +88,19 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
       ),
       FloatingActionButton(
         onPressed: () async {
+          var image2;
+          var image3;
+
           var id = uuid.v4();
-          await insertDog(toMap(id, titleController.text,
-              descriptionController.text, costController.text));
+          var appState = ApplicationStateFirebase();
+          await appState.addMessageToGuestBook(
+              id,
+              titleController.text,
+              descriptionController.text,
+              double.parse(costController.text),
+              'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3',
+              image2,
+              image3);
           var food = await foods(id);
           print(food);
         },
@@ -169,27 +178,6 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
     }
   }
 
-  Future<void> insertDog(sell) async {
-    final database = openDatabase(
-      // Set the path to the database. Note: Using the `join` function from the
-      // `path` package is best practice to ensure the path is correctly
-      // constructed for each platform.
-      join(await getDatabasesPath(), 'freegapp.db'),
-    );
-    // Get a reference to the database.
-    final db = await database;
-
-    // Insert the Dog into the correct table. You might also specify the
-    // `conflictAlgorithm` to use in case the same dog is inserted twice.
-    //
-    // In this case, replace any previous data.
-    await db.insert(
-      'food',
-      sell,
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
 // A method that retrieves all the dogs from the dogs table.
   Future<List<Map<String, dynamic>>> foods(id) async {
     final database = openDatabase(
@@ -202,7 +190,8 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
     final db = await database;
 
     // Query the table for all The Dogs.
-    final List<Map<String, dynamic>> maps = await db.query('food');
+    final List<Map<String, dynamic>> maps =
+        await db.rawQuery('SELECT * FROM food WHERE id=?', [id]);
     return maps;
   }
 

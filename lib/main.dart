@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:freegapp/TheMap.dart';
 import 'package:freegapp/src/ApplicationStateFirebase.dart';
 import 'package:freegapp/LoginFlow.dart';
-import 'dart:async';
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
