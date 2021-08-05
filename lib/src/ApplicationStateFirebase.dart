@@ -91,24 +91,23 @@ class ApplicationStateFirebase extends ChangeNotifier {
 
   // Add from here
   Future<DocumentReference> addDocumentToFood(
-      String id,
-      String title,
-      String description,
-      double cost,
-      String image1,
-      String? image2,
-      String? image3) {
+    String id,
+    String title,
+    String description,
+    double cost,
+    List<String> images,
+  ) {
     return FirebaseFirestore.instance.collection('food').add({
       'id': id,
       'title': title,
       'description': description,
       'cost': cost,
-      'image1': image1,
-      'image2': image2,
-      'image3': image3,
+      'image1': images[0],
+      'image2': images.length <= 1 ? null : images[1],
+      'image3': images.length <= 2 ? null : images[2],
       'name': FirebaseAuth.instance.currentUser!.displayName,
       'userId': FirebaseAuth.instance.currentUser!.uid,
-      //'timestamp': DateTime.now().millisecondsSinceEpoch,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
     });
   }
   // To here

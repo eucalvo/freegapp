@@ -49,7 +49,7 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
       Column(children: [
         SafeArea(
             child: Container(
-                height: 80,
+                height: 100,
                 width: screenWidth,
                 child: Row(children: [
                   FloatingActionButton(
@@ -138,7 +138,7 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
       );
     } else {
       return const Text(
-        'You have not yet picked an image.',
+        'Pick up to 3 images.',
         textAlign: TextAlign.center,
       );
     }
@@ -180,15 +180,15 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
       String title, String description, String cost, List<String> image) async {
     var id = uuid.v4();
     var appState = ApplicationStateFirebase();
-    await appState.addDocumentToFood(id, title, description, double.parse(cost),
-        image[0], image[1], image[2]);
+    await appState.addDocumentToFood(
+        id, title, description, double.parse(cost), images);
   }
 
-  Future<List<String>> readImagesToBase64(List<XFile>? imageFiles) async {
+  Future<List<dynamic>> readImagesToBase64(List<XFile>? imageFiles) async {
     var imageToBytes = List<Uint8List>.filled(3, Uint8List(0), growable: false);
-    var temp = List<String>.filled(3, '', growable: false);
-    for (var i = 0; i < imageToBytes.length; i++) {
-      imageToBytes[i] = await imageFiles![i].readAsBytes();
+    var temp = List.filled(imageFiles!.length, null.toString(), growable: true);
+    for (var i = 0; i < imageFiles.length; i++) {
+      imageToBytes[i] = await imageFiles[i].readAsBytes();
       temp[i] = base64Encode(imageToBytes[i]);
     }
     return temp;
