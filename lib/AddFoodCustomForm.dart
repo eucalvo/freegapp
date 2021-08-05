@@ -6,8 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:freegapp/src/ApplicationStateFirebase.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 
 class AddFoodCustomForm extends StatefulWidget {
   AddFoodCustomForm({Key? key})
@@ -30,6 +30,7 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
   final descriptionController = TextEditingController();
   final costController = TextEditingController();
   var uuid = Uuid();
+  var images;
 
   @override
   void dispose() {
@@ -88,21 +89,9 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
       ),
       FloatingActionButton(
         onPressed: () async {
-          var image2;
-          var image3;
-
-          var id = uuid.v4();
-          var appState = ApplicationStateFirebase();
-          await appState.addMessageToGuestBook(
-              id,
-              titleController.text,
-              descriptionController.text,
-              double.parse(costController.text),
-              'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3',
-              image2,
-              image3);
-          var food = await foods(id);
-          print(food);
+          images = await readImagesToBase64(_imageFileList);
+          await writeToFirebase(titleController.text,
+              descriptionController.text, costController.text, images);
         },
         child: const Text('Upload'),
       ),
@@ -178,23 +167,6 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
     }
   }
 
-// A method that retrieves all the dogs from the dogs table.
-  Future<List<Map<String, dynamic>>> foods(id) async {
-    final database = openDatabase(
-      // Set the path to the database. Note: Using the `join` function from the
-      // `path` package is best practice to ensure the path is correctly
-      // constructed for each platform.
-      join(await getDatabasesPath(), 'freegapp.db'),
-    );
-    // Get a reference to the database.
-    final db = await database;
-
-    // Query the table for all The Dogs.
-    final List<Map<String, dynamic>> maps =
-        await db.rawQuery('SELECT * FROM food WHERE id=?', [id]);
-    return maps;
-  }
-
   Map<String, dynamic> toMap(id, title, description, cost) {
     return {
       'id': id,
@@ -202,5 +174,23 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
       'description': description,
       'cost': cost,
     };
+  }
+
+  Future<void> writeToFirebase(
+      String title, String description, String cost, List<String> image) async {
+    var id = uuid.v4();
+    var appState = ApplicationStateFirebase();
+    await appState.addDocumentToFood(id, title, description, double.parse(cost),
+        image[0], image[1], image[2]);
+  }
+
+  Future<List<String>> readImagesToBase64(List<XFile>? imageFiles) async {
+    var imageToBytes = List<Uint8List>.filled(3, Uint8List(0), growable: false);
+    var temp = List<String>.filled(3, '', growable: false);
+    for (var i = 0; i < imageToBytes.length; i++) {
+      imageToBytes[i] = await imageFiles![i].readAsBytes();
+      temp[i] = base64Encode(imageToBytes[i]);
+    }
+    return temp;
   }
 }

@@ -90,7 +90,7 @@ class ApplicationStateFirebase extends ChangeNotifier {
   }
 
   // Add from here
-  Future<DocumentReference> addMessageToGuestBook(
+  Future<DocumentReference> addDocumentToFood(
       String id,
       String title,
       String description,
