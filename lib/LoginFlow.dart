@@ -89,7 +89,7 @@ class LoginFlow extends StatelessWidget {
           logout: () {
             signOut();
           },
-          key: Key('Sell'),
+          key: Key('Selling'),
         );
       default:
         return Row(

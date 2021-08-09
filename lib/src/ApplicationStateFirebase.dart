@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegapp/LoginFlow.dart';
-
+import 'package:freegapp/src/Food.dart';
 import 'dart:async'; // new
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -10,6 +10,9 @@ class ApplicationStateFirebase extends ChangeNotifier {
   ApplicationStateFirebase() {
     init();
   }
+  StreamSubscription<QuerySnapshot>? _foodSubscription;
+  List<Food> _foods = [];
+  List<Food> get foodList => _foods;
 
   Future<void> init() async {
     await Firebase.initializeApp();
@@ -17,8 +20,31 @@ class ApplicationStateFirebase extends ChangeNotifier {
     FirebaseAuth.instance.userChanges().listen((user) {
       if (user != null) {
         _loginState = ApplicationLoginState.loggedIn;
+        _foodSubscription = FirebaseFirestore.instance
+            .collection('food')
+            .where(user)
+            .orderBy('timestamp', descending: true)
+            .snapshots()
+            .listen((snapshot) {
+          _foods = [];
+          snapshot.docs.forEach((document) {
+            _foods.add(
+              Food(
+                title: document.data()['title'],
+                description: document.data()['description'],
+                cost: document.data()['cost'],
+                image1: document.data()['image1'],
+                image2: document.data()['image2'],
+                image3: document.data()['image3'],
+              ),
+            );
+          });
+          notifyListeners();
+        });
       } else {
         _loginState = ApplicationLoginState.loggedOut;
+        _foods = [];
+        _foodSubscription?.cancel();
       }
       notifyListeners();
     });
@@ -110,5 +136,4 @@ class ApplicationStateFirebase extends ChangeNotifier {
       'timestamp': DateTime.now().millisecondsSinceEpoch,
     });
   }
-  // To here
 }
