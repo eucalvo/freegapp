@@ -89,6 +89,7 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
       ),
       FloatingActionButton(
         onPressed: () async {
+          Navigator.pop(context);
           images = await readImagesToBase64(_imageFileList);
           await writeToFirebase(titleController.text,
               descriptionController.text, costController.text, images);
