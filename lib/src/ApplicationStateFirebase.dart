@@ -5,6 +5,7 @@ import 'package:freegapp/LoginFlow.dart';
 import 'package:freegapp/src/Food.dart';
 import 'dart:async'; // new
 import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
 
 class ApplicationStateFirebase extends ChangeNotifier {
   ApplicationStateFirebase() {
@@ -22,7 +23,7 @@ class ApplicationStateFirebase extends ChangeNotifier {
         _loginState = ApplicationLoginState.loggedIn;
         _foodSubscription = FirebaseFirestore.instance
             .collection('food')
-            .where(user)
+            // .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
             .orderBy('timestamp', descending: true)
             .snapshots()
             .listen((snapshot) {
@@ -32,10 +33,10 @@ class ApplicationStateFirebase extends ChangeNotifier {
               Food(
                 title: document.data()['title'],
                 description: document.data()['description'],
-                cost: document.data()['cost'],
+                cost: document.data()['cost'].toDouble(),
                 image1: document.data()['image1'],
-                image2: document.data()['image2'],
-                image3: document.data()['image3'],
+                image2: document.data()['image2'] ?? '',
+                image3: document.data()['image3'] ?? '',
               ),
             );
           });

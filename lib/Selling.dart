@@ -60,13 +60,16 @@ class FoodWidget extends StatefulWidget {
 class _FoodWidgetState extends State<FoodWidget> {
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Container(
+        child: ListView(
+      primary: false,
+      shrinkWrap: true,
       children: [
         for (var foods in widget.foodList)
           _previewItems(foods.title, foods.description, foods.cost,
               foods.image1, foods.image2, foods.image3),
       ],
-    );
+    ));
   }
 
   Widget _previewItems(title, description, cost, image1, image2, image3) {
@@ -117,7 +120,7 @@ class _FoodWidgetState extends State<FoodWidget> {
                             maxLines: 1,
                           )),
                       Text(
-                        cost,
+                        '$cost',
                         style: TextStyle(
                           fontSize: 12.0,
                           color: Colors.black54,
