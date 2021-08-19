@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:freegapp/src/ApplicationStateFirebase.dart';
 import 'package:freegapp/src/Food.dart';
 import 'dart:convert';
@@ -22,6 +23,18 @@ class _SellingState extends State<Selling> {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          ElevatedButton(onPressed: () {}, child: Text('Go live')),
+          ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AddFoodCustomForm(
+                            key: Key('AddFoodCustomForm'),
+                          )),
+                );
+              },
+              child: Icon(Icons.add)),
           ElevatedButton(
             onPressed: widget.logout,
             child: const Text('Logout'),
@@ -29,23 +42,13 @@ class _SellingState extends State<Selling> {
         ],
         title: const Text(_appTitle),
       ),
-      body: Column(children: [
-        Consumer<ApplicationStateFirebase>(
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: Consumer<ApplicationStateFirebase>(
             builder: (context, appState, _) =>
                 FoodWidget(foodList: appState.foodList)),
-        ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => AddFoodCustomForm(
-                          key: Key('AddFoodCustomForm'),
-                        )),
-              );
-            },
-            child: Icon(Icons.add)),
-        ElevatedButton(onPressed: () {}, child: Text('Go live'))
-      ]),
+      ),
     );
   }
 }
@@ -60,16 +63,40 @@ class FoodWidget extends StatefulWidget {
 class _FoodWidgetState extends State<FoodWidget> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: ListView(
-      primary: false,
-      shrinkWrap: true,
-      children: [
-        for (var foods in widget.foodList)
-          _previewItems(foods.title, foods.description, foods.cost,
-              foods.image1, foods.image2, foods.image3),
-      ],
-    ));
+    return
+        // child: ElevatedButton(
+        //   onPressed: () {
+        //     final item = widget.foodList[0];
+        //     print(item);
+        //   },
+        //   child: Text('test'),
+        // ),
+        ListView.builder(
+            itemCount: widget.foodList.length,
+            itemBuilder: (context, index) {
+              final item = widget.foodList[index];
+              return Dismissible(
+                  key: Key(item.documentID),
+                  onDismissed: (direction) {
+                    var appState = ApplicationStateFirebase();
+                    appState.seeYouSpaceCowboy(item.documentID);
+                    setState(() {
+                      widget.foodList.removeAt(index);
+                    });
+                    var title = item.title;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('$title deleted')));
+                  },
+                  child: _previewItems(item.title, item.description, item.cost,
+                      item.image1, item.image2, item.image3));
+            });
+    // primary: false,
+    // shrinkWrap: true,
+    // children: [
+    //   for (var foods in widget.foodList)
+    //     _previewItems(foods.title, foods.description, foods.cost,
+    //         foods.image1, foods.image2, foods.image3),
+    // ],
   }
 
   Widget _previewItems(title, description, cost, image1, image2, image3) {

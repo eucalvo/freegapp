@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,7 @@ class ApplicationStateFirebase extends ChangeNotifier {
         _loginState = ApplicationLoginState.loggedIn;
         _foodSubscription = FirebaseFirestore.instance
             .collection('food')
-            // .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+            .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
             .orderBy('timestamp', descending: true)
             .snapshots()
             .listen((snapshot) {
@@ -31,6 +33,7 @@ class ApplicationStateFirebase extends ChangeNotifier {
           snapshot.docs.forEach((document) {
             _foods.add(
               Food(
+                documentID: document.id,
                 title: document.data()['title'],
                 description: document.data()['description'],
                 cost: document.data()['cost'].toDouble(),
@@ -136,5 +139,9 @@ class ApplicationStateFirebase extends ChangeNotifier {
       'userId': FirebaseAuth.instance.currentUser!.uid,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
     });
+  }
+
+  void seeYouSpaceCowboy(id) {
+    FirebaseFirestore.instance.collection('food').doc(id).delete();
   }
 }
