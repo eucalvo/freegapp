@@ -7,7 +7,6 @@ import 'package:freegapp/LoginFlow.dart';
 import 'package:freegapp/src/Food.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 final tUser = MockUser(
   isAnonymous: false,
@@ -19,7 +18,7 @@ final tUser = MockUser(
   refreshToken: 'some_long_token',
 );
 
-final auth = MockFirebaseAuth(mockUser: tUser);
+final auth = MockFirebaseAuth(signedIn: true, mockUser: tUser);
 final instance = FakeFirebaseFirestore();
 final passwordError = FirebaseAuthException(
   code: 'wrong-password:',
@@ -42,7 +41,10 @@ Future<void> updateDisplayName(String? displayName) {
 class MockQuerySnapshot {}
 
 class ApplicationStateFirebaseMock extends ChangeNotifier {
-  StreamSubscription<QuerySnapshot>? _foodSubscription;
+  ApplicationStateFirebaseMock() {
+    init();
+  }
+
   List<Food> _foods = [];
   List<Food> get foodList => _foods;
 
@@ -50,38 +52,29 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
   ApplicationLoginState get loginState => _loginState;
 
   Future<void> init() async {
-    auth.userChanges().listen((user) {
-      if (user != null) {
-        _loginState = ApplicationLoginState.loggedIn;
-        _foodSubscription = instance
-            .collection('food')
-            .where('userId', isEqualTo: auth.currentUser!.uid)
-            .orderBy('timestamp', descending: true)
-            .snapshots()
-            .listen((snapshot) {
-          _foods = [];
-          snapshot.docs.forEach((document) {
-            _foods.add(
-              Food(
-                documentID: document.id,
-                title: document.data()['title'],
-                description: document.data()['description'],
-                cost: document.data()['cost'].toDouble(),
-                image1: document.data()['image1'],
-                image2: document.data()['image2'] ?? '',
-                image3: document.data()['image3'] ?? '',
-              ),
-            );
-          });
-          notifyListeners();
-        });
-      } else {
-        _loginState = ApplicationLoginState.loggedOut;
-        _foods = [];
-        _foodSubscription?.cancel();
-      }
+    instance
+        .collection('food')
+        .where('userId', isEqualTo: auth.currentUser!.uid)
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .listen((snapshot) {
+      _foods = [];
+      snapshot.docs.forEach((document) {
+        _foods.add(
+          Food(
+            documentID: document.id,
+            title: document.data()['title'],
+            description: document.data()['description'],
+            cost: document.data()['cost'].toDouble(),
+            image1: document.data()['image1'],
+            image2: document.data()['image2'] ?? '',
+            image3: document.data()['image3'] ?? '',
+          ),
+        );
+      });
       notifyListeners();
     });
+    notifyListeners();
   }
 
   String? _email;
