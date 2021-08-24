@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'dart:io';
 import 'package:freegapp/src/ApplicationStateFirebase.dart';
+import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
 import 'package:freegapp/src/Food.dart';
 import 'dart:convert';
 import 'package:freegapp/AddFoodCustomForm.dart';
@@ -45,9 +46,13 @@ class _SellingState extends State<Selling> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        child: Consumer<ApplicationStateFirebase>(
-            builder: (context, appState, _) =>
-                FoodWidget(foodList: appState.foodList)),
+        child: Platform.environment.containsKey('FLUTTER_TEST') == true
+            ? Consumer<ApplicationStateFirebaseMock>(
+                builder: (context, appState, _) =>
+                    FoodWidget(foodList: appState.foodList))
+            : Consumer<ApplicationStateFirebase>(
+                builder: (context, appState, _) =>
+                    FoodWidget(foodList: appState.foodList)),
       ),
     );
   }
@@ -63,40 +68,25 @@ class FoodWidget extends StatefulWidget {
 class _FoodWidgetState extends State<FoodWidget> {
   @override
   Widget build(BuildContext context) {
-    return
-        // child: ElevatedButton(
-        //   onPressed: () {
-        //     final item = widget.foodList[0];
-        //     print(item);
-        //   },
-        //   child: Text('test'),
-        // ),
-        ListView.builder(
-            itemCount: widget.foodList.length,
-            itemBuilder: (context, index) {
-              final item = widget.foodList[index];
-              return Dismissible(
-                  key: Key(item.documentID),
-                  onDismissed: (direction) {
-                    var appState = ApplicationStateFirebase();
-                    appState.seeYouSpaceCowboy(item.documentID);
-                    setState(() {
-                      widget.foodList.removeAt(index);
-                    });
-                    var title = item.title;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('$title deleted')));
-                  },
-                  child: _previewItems(item.title, item.description, item.cost,
-                      item.image1, item.image2, item.image3));
-            });
-    // primary: false,
-    // shrinkWrap: true,
-    // children: [
-    //   for (var foods in widget.foodList)
-    //     _previewItems(foods.title, foods.description, foods.cost,
-    //         foods.image1, foods.image2, foods.image3),
-    // ],
+    return ListView.builder(
+        itemCount: widget.foodList.length,
+        itemBuilder: (context, index) {
+          final item = widget.foodList[index];
+          return Dismissible(
+              key: Key(item.documentID),
+              onDismissed: (direction) {
+                var appState = ApplicationStateFirebase();
+                appState.seeYouSpaceCowboy(item.documentID);
+                setState(() {
+                  widget.foodList.removeAt(index);
+                });
+                var title = item.title;
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('$title deleted')));
+              },
+              child: _previewItems(item.title, item.description, item.cost,
+                  item.image1, item.image2, item.image3));
+        });
   }
 
   Widget _previewItems(title, description, cost, image1, image2, image3) {
