@@ -5,9 +5,33 @@ import 'package:freegapp/TheMap.dart';
 import 'package:freegapp/src/ApplicationStateFirebase.dart';
 import 'package:freegapp/LoginFlow.dart';
 
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+
 void main() async {
+  // Avoid errors caused by flutter upgrade.
+  // Importing 'package:flutter/widgets.dart' is required.
   WidgetsFlutterBinding.ensureInitialized(); // Required by FlutterConfig
   await FlutterConfig.loadEnvVariables();
+  // Open the database and store the reference.
+  await openDatabase(
+    // Set the path to the database. Note: Using the `join` function from the
+    // `path` package is best practice to ensure the path is correctly
+    // constructed for each platform.
+    join(await getDatabasesPath(), 'freegapp.db'),
+    onCreate: (db, version) {
+      // Run the CREATE TABLE statement on the database.
+      db.execute(
+        'CREATE TABLE food(id TEXT PRIMARY KEY, title TEXT, description TEXT, cost REAL)',
+      );
+      db.execute(
+        'CREATE TABLE images(id TEXT PRIMARY KEY, image TEXT)',
+      );
+    },
+    // Set the version. This executes the onCreate function and provides a
+    // path to perform database upgrades and downgrades.
+    version: 1,
+  );
 
   runApp(
     ChangeNotifierProvider(

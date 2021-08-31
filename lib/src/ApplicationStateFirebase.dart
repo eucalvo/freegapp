@@ -2,11 +2,18 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegapp/LoginFlow.dart';
+import 'package:freegapp/src/Food.dart';
+import 'dart:async'; // new
+import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
 
 class ApplicationStateFirebase extends ChangeNotifier {
   ApplicationStateFirebase() {
     init();
   }
+  StreamSubscription<QuerySnapshot>? _foodSubscription;
+  List<Food> _foods = [];
+  List<Food> get foodList => _foods;
 
   Future<void> init() async {
     await Firebase.initializeApp();
@@ -14,8 +21,32 @@ class ApplicationStateFirebase extends ChangeNotifier {
     FirebaseAuth.instance.userChanges().listen((user) {
       if (user != null) {
         _loginState = ApplicationLoginState.loggedIn;
+        _foodSubscription = FirebaseFirestore.instance
+            .collection('food')
+            .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+            .orderBy('timestamp', descending: true)
+            .snapshots()
+            .listen((snapshot) {
+          _foods = [];
+          snapshot.docs.forEach((document) {
+            _foods.add(
+              Food(
+                documentID: document.id,
+                title: document.data()['title'],
+                description: document.data()['description'],
+                cost: document.data()['cost'].toDouble(),
+                image1: document.data()['image1'],
+                image2: document.data()['image2'] ?? '',
+                image3: document.data()['image3'] ?? '',
+              ),
+            );
+          });
+          notifyListeners();
+        });
       } else {
         _loginState = ApplicationLoginState.loggedOut;
+        _foods = [];
+        _foodSubscription?.cancel();
       }
       notifyListeners();
     });
@@ -84,5 +115,31 @@ class ApplicationStateFirebase extends ChangeNotifier {
 
   void signOut() {
     FirebaseAuth.instance.signOut();
+  }
+
+  // Add from here
+  Future<DocumentReference> addDocumentToFood(
+    String id,
+    String title,
+    String description,
+    double cost,
+    List<String> images,
+  ) {
+    return FirebaseFirestore.instance.collection('food').add({
+      'id': id,
+      'title': title,
+      'description': description,
+      'cost': cost,
+      'image1': images[0],
+      'image2': images.length <= 1 ? null : images[1],
+      'image3': images.length <= 2 ? null : images[2],
+      'name': FirebaseAuth.instance.currentUser!.displayName,
+      'userId': FirebaseAuth.instance.currentUser!.uid,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    });
+  }
+
+  void seeYouSpaceCowboy(id) {
+    FirebaseFirestore.instance.collection('food').doc(id).delete();
   }
 }
