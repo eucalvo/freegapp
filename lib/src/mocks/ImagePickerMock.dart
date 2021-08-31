@@ -7,6 +7,7 @@ import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:flutter/src/services/asset_bundle.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:flutter_test/flutter_test.dart';
 
 class ImagePickerMock {
   /// The platform interface that drives this plugin
