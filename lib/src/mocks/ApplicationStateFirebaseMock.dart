@@ -52,6 +52,7 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
   ApplicationLoginState get loginState => _loginState;
 
   Future<void> init() async {
+    var i = 0;
     instance
         .collection('food')
         .where('userId', isEqualTo: auth.currentUser!.uid)
@@ -62,7 +63,7 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
       snapshot.docs.forEach((document) {
         _foods.add(
           Food(
-            documentID: document.id,
+            documentID: '$i',
             title: document.data()['title'],
             description: document.data()['description'],
             cost: document.data()['cost'].toDouble(),
@@ -71,6 +72,7 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
             image3: document.data()['image3'] ?? '',
           ),
         );
+        i++;
       });
       notifyListeners();
     });

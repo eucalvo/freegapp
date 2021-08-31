@@ -8,6 +8,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
+import 'package:freegapp/src/mocks/ImagePickerMock.dart';
 
 class AddFoodCustomForm extends StatefulWidget {
   AddFoodCustomForm({Key? key})
@@ -26,11 +28,15 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
   dynamic _pickImageError;
   String? _retrieveDataError;
   final ImagePicker _picker = ImagePicker();
+  final ImagePickerMock _mockPicker = ImagePickerMock();
+
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final costController = TextEditingController();
   var uuid = Uuid();
   var images;
+  final imageHeight = 100.0;
+  var validate = false;
 
   @override
   void dispose() {
@@ -43,44 +49,50 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
 
   @override
   Widget build(BuildContext context) {
-    var screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
         body: Column(children: [
-      Column(children: [
-        SafeArea(
-            child: Container(
-                height: 100,
-                width: screenWidth,
-                child: Row(children: [
-                  FloatingActionButton(
-                    onPressed: () {
-                      _onImageButtonPressed(
-                        ImageSource.gallery,
-                        context: context,
-                      );
-                    },
-                    heroTag: 'image1',
-                    tooltip: 'Pick Multiple Image from gallery',
-                    child: const Icon(Icons.photo_library),
-                  ),
-                  _previewImages(),
-                ]))),
-        TextField(
-          controller: titleController,
-          decoration:
-              InputDecoration(border: OutlineInputBorder(), hintText: 'title'),
-        ),
-        TextField(
-          controller: descriptionController,
-          decoration: InputDecoration(
-              border: OutlineInputBorder(), hintText: 'description'),
-        ),
-        TextField(
-          controller: costController,
-          decoration:
-              InputDecoration(border: OutlineInputBorder(), hintText: 'cost'),
-        )
-      ]),
+      SafeArea(
+          child: Container(
+              height: imageHeight,
+              width: MediaQuery.of(context).size.width,
+              child: Row(children: [
+                FloatingActionButton(
+                  onPressed: () {
+                    _onImageButtonPressed(
+                      context: context,
+                    );
+                  },
+                  heroTag: 'image1',
+                  tooltip: 'Pick Multiple Image from gallery',
+                  child: const Icon(Icons.photo_library),
+                ),
+                _previewImages(),
+              ]))),
+      TextField(
+        key: Key('titleAddFoodCustomForm'),
+        controller: titleController,
+        decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            hintText: 'title',
+            errorText: validate ? 'Value Can\'t Be Empty' : null),
+      ),
+      TextField(
+        key: Key('descriptionAddFoodCustomForm'),
+        controller: descriptionController,
+        decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            hintText: 'description',
+            errorText: validate ? 'Value Can\'t Be Empty' : null),
+      ),
+      TextField(
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
+        key: Key('costAddFoodCustomForm'),
+        controller: costController,
+        decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            hintText: 'cost',
+            errorText: validate ? 'Value Can\'t Be Empty' : null),
+      ),
       TextButton(
         onPressed: () {
           Navigator.pop(context);
@@ -89,19 +101,33 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
       ),
       FloatingActionButton(
         onPressed: () async {
-          Navigator.pop(context);
-          images = await readImagesToBase64(_imageFileList);
-          await writeToFirebase(titleController.text,
-              descriptionController.text, costController.text, images);
+          try {
+            images = await readImagesToBase64(_imageFileList);
+            if (titleController.text.isEmpty ||
+                descriptionController.text.isEmpty ||
+                costController.text.isEmpty) {
+              setState(() {
+                validate = true;
+              });
+            } else {
+              await writeToFirebase(titleController.text,
+                  descriptionController.text, costController.text, images);
+              Navigator.pop(context);
+            }
+          } on Exception catch (e) {
+            _showErrorDialog(context, 'No Image Selected', e);
+          }
         },
         child: const Text('Upload'),
       ),
     ]));
   }
 
-  void _onImageButtonPressed(ImageSource source,
-      {BuildContext? context}) async {
-    final pickedFileList = await _picker.pickMultiImage();
+  void _onImageButtonPressed({BuildContext? context}) async {
+    final pickedFileList =
+        Platform.environment.containsKey('FLUTTER_TEST') == true
+            ? await _mockPicker.pickMultiImage()
+            : await _picker.pickMultiImage();
     setState(() {
       _imageFileList = pickedFileList;
     });
@@ -114,6 +140,7 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
     }
     if (_imageFileList != null) {
       return Semantics(
+        key: Key('SemanticsAddFoodCustomFormKeyWithListViewBuilderAsChild'),
         label: 'image_picker_example_picked_images',
         child: ListView.builder(
           key: UniqueKey(),
@@ -125,8 +152,15 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
             return Semantics(
               label: 'image_picker_example_picked_image',
               child: kIsWeb
-                  ? Image.network(_imageFileList![index].path)
-                  : Image.file(File(_imageFileList![index].path)),
+                  ? Image.network(_imageFileList![index].path,
+                      height: imageHeight, width: 100, fit: BoxFit.cover)
+                  : Image.file(
+                      File(_imageFileList![index].path),
+                      height: imageHeight,
+                      width: 100,
+                      fit: BoxFit.cover,
+                      key: Key('ImageFile$index'),
+                    ),
             );
           },
           itemCount: _imageFileList!.length,
@@ -136,18 +170,23 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
       return Text(
         'Pick image error: $_pickImageError',
         textAlign: TextAlign.center,
+        key: Key('_pickImageErrorAddFoodCustomForm'),
       );
     } else {
       return const Text(
         'Pick up to 3 images.',
         textAlign: TextAlign.center,
+        key: Key('PickImagesAddFoodCustomForm'),
       );
     }
   }
 
   Text? _getRetrieveErrorWidget() {
     if (_retrieveDataError != null) {
-      final result = Text(_retrieveDataError!);
+      final result = Text(
+        _retrieveDataError!,
+        key: Key('_getRetrieveErrorWidgetAddFoodCustomForm'),
+      );
       _retrieveDataError = null;
       return result;
     }
@@ -180,18 +219,63 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
   Future<void> writeToFirebase(
       String title, String description, String cost, List<String> image) async {
     var id = uuid.v4();
+    var mockAppState = ApplicationStateFirebaseMock();
     var appState = ApplicationStateFirebase();
-    await appState.addDocumentToFood(
-        id, title, description, double.parse(cost), images);
+    if (Platform.environment.containsKey('FLUTTER_TEST') == true) {
+      await mockAppState.addDocumentToFood(
+          id, title, description, double.parse(cost), images);
+    } else {
+      await appState.addDocumentToFood(
+          id, title, description, double.parse(cost), images);
+    }
   }
 
   Future<List<dynamic>> readImagesToBase64(List<XFile>? imageFiles) async {
     var imageToBytes = List<Uint8List>.filled(3, Uint8List(0), growable: false);
-    var temp = List.filled(imageFiles!.length, null.toString(), growable: true);
+    if (imageFiles == null) {
+      throw FormatException('Pick at least 1 image');
+    }
+    var temp = List.filled(imageFiles.length, null.toString(), growable: true);
     for (var i = 0; i < imageFiles.length; i++) {
-      imageToBytes[i] = await imageFiles[i].readAsBytes();
+      imageToBytes[i] = File(imageFiles[i].path).readAsBytesSync();
       temp[i] = base64Encode(imageToBytes[i]);
     }
     return temp;
   }
+}
+
+void _showErrorDialog(BuildContext context, String title, Exception e) {
+  showDialog<void>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        key: Key('AlertDialogShowErrorDialogAddFoodCustomForm'),
+        title: Text(
+          title,
+          style: const TextStyle(fontSize: 24),
+        ),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text(
+                '${(e as dynamic).message}',
+                style: const TextStyle(fontSize: 18),
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text(
+              'OK',
+              style: TextStyle(color: Colors.deepPurple),
+            ),
+          ),
+        ],
+      );
+    },
+  );
 }

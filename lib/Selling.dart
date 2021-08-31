@@ -76,7 +76,12 @@ class _FoodWidgetState extends State<FoodWidget> {
               key: Key(item.documentID),
               onDismissed: (direction) {
                 var appState = ApplicationStateFirebase();
-                appState.seeYouSpaceCowboy(item.documentID);
+                var mockAppState = ApplicationStateFirebaseMock();
+                if (Platform.environment.containsKey('FLUTTER_TEST') == true) {
+                  mockAppState.seeYouSpaceCowboy(item.documentID);
+                } else {
+                  appState.seeYouSpaceCowboy(item.documentID);
+                }
                 setState(() {
                   widget.foodList.removeAt(index);
                 });
