@@ -34,7 +34,6 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
   final descriptionController = TextEditingController();
   final costController = TextEditingController();
   var uuid = Uuid();
-  var images;
   final imageHeight = 100.0;
   var validate = false;
 
@@ -102,7 +101,6 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
       FloatingActionButton(
         onPressed: () async {
           try {
-            images = await readImagesToBase64(_imageFileList);
             if (titleController.text.isEmpty ||
                 descriptionController.text.isEmpty ||
                 costController.text.isEmpty) {
@@ -110,8 +108,11 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
                 validate = true;
               });
             } else {
-              await writeToFirebase(titleController.text,
-                  descriptionController.text, costController.text, images);
+              await writeToFirebase(
+                  titleController.text,
+                  descriptionController.text,
+                  costController.text,
+                  await readImagesToBase64(_imageFileList));
               Navigator.pop(context);
             }
           } on Exception catch (e) {
@@ -216,21 +217,19 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
     };
   }
 
-  Future<void> writeToFirebase(
-      String title, String description, String cost, List<String> image) async {
+  Future<void> writeToFirebase(String title, String description, String cost,
+      List<String> images) async {
     var id = uuid.v4();
-    var mockAppState = ApplicationStateFirebaseMock();
-    var appState = ApplicationStateFirebase();
     if (Platform.environment.containsKey('FLUTTER_TEST') == true) {
-      await mockAppState.addDocumentToFood(
+      await ApplicationStateFirebaseMock().addDocumentToFood(
           id, title, description, double.parse(cost), images);
     } else {
-      await appState.addDocumentToFood(
+      await ApplicationStateFirebase().addDocumentToFood(
           id, title, description, double.parse(cost), images);
     }
   }
 
-  Future<List<dynamic>> readImagesToBase64(List<XFile>? imageFiles) async {
+  Future<List<String>> readImagesToBase64(List<XFile>? imageFiles) async {
     var imageToBytes = List<Uint8List>.filled(3, Uint8List(0), growable: false);
     if (imageFiles == null) {
       throw FormatException('Pick at least 1 image');

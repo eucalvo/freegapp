@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegapp/LoginFlow.dart';
 import 'package:freegapp/src/Food.dart';
+import 'package:freegapp/src/MyUserInfo.dart';
 import 'dart:async'; // new
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
@@ -13,11 +14,13 @@ class ApplicationStateFirebase extends ChangeNotifier {
   }
   StreamSubscription<QuerySnapshot>? _foodSubscription;
   List<Food> _foods = [];
+  MyUserInfo _myUserInfo = null as MyUserInfo;
   List<Food> get foodList => _foods;
+  MyUserInfo get myUserInfo => _myUserInfo;
 
   Future<void> init() async {
     await Firebase.initializeApp();
-
+    await getUserInfoFromUsers();
     FirebaseAuth.instance.userChanges().listen((user) {
       if (user != null) {
         _loginState = ApplicationLoginState.loggedIn;
@@ -139,7 +142,48 @@ class ApplicationStateFirebase extends ChangeNotifier {
     });
   }
 
+  Future<void> addDocumentToUsers(
+    String homeAddress,
+    String country,
+    int phoneNumber,
+    String profilePic,
+  ) async {
+    await FirebaseFirestore.instance
+        .collection('food')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .set({
+      'homeAddress': homeAddress,
+      'country': country,
+      'phoneNumber': phoneNumber,
+      'profilePic': profilePic,
+      'name': FirebaseAuth.instance.currentUser!.displayName,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    });
+  }
+
   void seeYouSpaceCowboy(id) {
     FirebaseFirestore.instance.collection('food').doc(id).delete();
+  }
+
+  Future<void> getUserInfoFromUsers() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        _myUserInfo = MyUserInfo(
+          userId: documentSnapshot['userId'],
+          name: documentSnapshot['name'],
+          country: documentSnapshot['country'],
+          homeAddress: documentSnapshot['homeAddress'],
+          phoneNumber: documentSnapshot['phoneNumber'],
+          profilePic: documentSnapshot['profilePic'],
+        );
+        // data = documentSnapshot.data();
+      } else {
+        _myUserInfo = null as MyUserInfo;
+      }
+    });
   }
 }

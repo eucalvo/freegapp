@@ -7,6 +7,7 @@ import 'package:freegapp/LoginFlow.dart';
 import 'package:freegapp/src/Food.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'dart:async';
+import 'package:freegapp/src/MyUserInfo.dart';
 
 final tUser = MockUser(
   isAnonymous: false,
@@ -46,12 +47,15 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
   }
 
   List<Food> _foods = [];
+  MyUserInfo _myUserInfo = null as MyUserInfo;
   List<Food> get foodList => _foods;
+  MyUserInfo get myUserInfo => _myUserInfo;
 
   ApplicationLoginState _loginState = ApplicationLoginState.loggedOut;
   ApplicationLoginState get loginState => _loginState;
 
   Future<void> init() async {
+    await getUserInfoFromUsers();
     var i = 0;
     instance
         .collection('food')
@@ -170,7 +174,45 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
     });
   }
 
+  Future<void> addDocumentToUsers(
+    String homeAddress,
+    String country,
+    int phoneNumber,
+    String profilePic,
+  ) async {
+    await instance.collection('food').doc(auth.currentUser!.uid).set({
+      'homeAddress': homeAddress,
+      'country': country,
+      'phoneNumber': phoneNumber,
+      'profilePic': profilePic,
+      'name': auth.currentUser!.displayName,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    });
+  }
+
   void seeYouSpaceCowboy(id) {
     instance.collection('food').doc(id).delete();
+  }
+
+  Future<void> getUserInfoFromUsers() async {
+    await instance
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .get()
+        .then((documentSnapshot) {
+      if (documentSnapshot.exists) {
+        _myUserInfo = MyUserInfo(
+          userId: documentSnapshot['userId'],
+          name: documentSnapshot['name'],
+          country: documentSnapshot['country'],
+          homeAddress: documentSnapshot['homeAddress'],
+          phoneNumber: documentSnapshot['phoneNumber'],
+          profilePic: documentSnapshot['profilePic'],
+        );
+        // data = documentSnapshot.data();
+      } else {
+        _myUserInfo = null as MyUserInfo;
+      }
+    });
   }
 }
