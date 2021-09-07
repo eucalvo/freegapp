@@ -14,7 +14,7 @@ class ApplicationStateFirebase extends ChangeNotifier {
   }
   StreamSubscription<QuerySnapshot>? _foodSubscription;
   List<Food> _foods = [];
-  MyUserInfo _myUserInfo = null as MyUserInfo;
+  MyUserInfo _myUserInfo = MyUserInfo();
   List<Food> get foodList => _foods;
   MyUserInfo get myUserInfo => _myUserInfo;
 
@@ -173,7 +173,7 @@ class ApplicationStateFirebase extends ChangeNotifier {
         .then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
         _myUserInfo = MyUserInfo(
-          userId: documentSnapshot['userId'],
+          userId: documentSnapshot.id,
           name: documentSnapshot['name'],
           country: documentSnapshot['country'],
           homeAddress: documentSnapshot['homeAddress'],
@@ -182,7 +182,7 @@ class ApplicationStateFirebase extends ChangeNotifier {
         );
         // data = documentSnapshot.data();
       } else {
-        _myUserInfo = null as MyUserInfo;
+        _myUserInfo = MyUserInfo();
       }
     });
   }

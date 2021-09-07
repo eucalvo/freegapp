@@ -7,6 +7,7 @@ import 'package:freegapp/src/ApplicationStateFirebase.dart';
 import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:path_provider/path_provider.dart';
 
 class PersonalInfo extends StatefulWidget {
   PersonalInfo({Key? key, required this.myUserInfo})
@@ -20,11 +21,34 @@ class _PersonalInfoState extends State<PersonalInfo> {
   final homeAddressController = TextEditingController();
   final phoneNumberController = TextEditingController();
   final countryController = TextEditingController();
+  List<XFile>? _imageFileList;
+  @override
+  void initState() async {
+    super.initState();
+    homeAddressController.text = widget.myUserInfo.homeAddress == null
+        ? ''
+        : '${widget.myUserInfo.homeAddress}';
+    phoneNumberController.text = widget.myUserInfo.phoneNumber == null
+        ? ''
+        : '${widget.myUserInfo.phoneNumber}';
+    countryController.text =
+        widget.myUserInfo.country == null ? '' : '${widget.myUserInfo.country}';
+    if (widget.myUserInfo.profilePic != null) {
+      var profilePicBase64 = widget.myUserInfo.profilePic as String;
+      final temp = await getTemporaryDirectory();
+      var profilePicTemporaryFile = File('${temp.path}/imageFromFirebase.jpg');
+      await profilePicTemporaryFile.create(recursive: true);
+      var imageInBytes = base64Decode(profilePicBase64);
+      await File(profilePicTemporaryFile.path).writeAsBytes(imageInBytes);
+      var tempList;
+      _imageFileList = tempList.add(XFile(profilePicTemporaryFile.path));
+    }
+  }
+
   final ImagePicker _picker = ImagePicker();
   final ImagePickerMock _mockPicker = ImagePickerMock();
   final _formKey = GlobalKey<FormState>(debugLabel: '_PersonalInfoState');
   // String? _retrieveDataError;
-  List<XFile>? _imageFileList;
   // set _imageFile(XFile? value) {
   //   _imageFileList = value == null ? null : [value];
   // }
@@ -63,7 +87,6 @@ class _PersonalInfoState extends State<PersonalInfo> {
                       }
                       return null;
                     },
-                    initialValue: widget.myUserInfo.homeAddress,
                   ),
                   TextFormField(
                     key: Key('phoneNumberPersonalInfo'),
@@ -78,7 +101,6 @@ class _PersonalInfoState extends State<PersonalInfo> {
                       }
                       return null;
                     },
-                    initialValue: '${widget.myUserInfo.phoneNumber}',
                     keyboardType: TextInputType.number,
                   ),
                   TextFormField(
@@ -94,7 +116,6 @@ class _PersonalInfoState extends State<PersonalInfo> {
                       }
                       return null;
                     },
-                    initialValue: widget.myUserInfo.country,
                   ),
                   ElevatedButton(
                     onPressed: () async {
@@ -136,8 +157,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
         CircleAvatar(
           radius: 80.0,
           backgroundImage: _imageFileList == null
-              ? Image.memory(base64Decode(widget.myUserInfo.profilePic))
-                  as ImageProvider
+              ? null
               : FileImage(File(_imageFileList![0].path)),
         ),
         Positioned(
@@ -151,7 +171,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
               );
             },
             child: Icon(
-              Icons.camera_alt,
+              Icons.camera_alt_outlined,
               color: Colors.teal,
               size: 28.0,
             ),

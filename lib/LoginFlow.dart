@@ -88,7 +88,7 @@ class LoginFlow extends StatelessWidget {
           },
         );
       case ApplicationLoginState.loggedIn:
-        if (ApplicationStateFirebase().myUserInfo == null as MyUserInfo) {
+        if (ApplicationStateFirebase().myUserInfo.userId == null) {
           return PersonalInfo(
               myUserInfo: ApplicationStateFirebase().myUserInfo);
         } else {
