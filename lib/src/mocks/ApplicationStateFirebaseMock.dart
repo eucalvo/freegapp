@@ -180,7 +180,7 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
     int phoneNumber,
     String profilePic,
   ) async {
-    await instance.collection('food').doc(auth.currentUser!.uid).set({
+    await instance.collection('users').doc(auth.currentUser!.uid).set({
       'homeAddress': homeAddress,
       'country': country,
       'phoneNumber': phoneNumber,

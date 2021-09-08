@@ -149,7 +149,7 @@ class ApplicationStateFirebase extends ChangeNotifier {
     String profilePic,
   ) async {
     await FirebaseFirestore.instance
-        .collection('food')
+        .collection('users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .set({
       'homeAddress': homeAddress,
@@ -166,6 +166,7 @@ class ApplicationStateFirebase extends ChangeNotifier {
   }
 
   Future<void> getUserInfoFromUsers() async {
+    print('do me');
     await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser!.uid)

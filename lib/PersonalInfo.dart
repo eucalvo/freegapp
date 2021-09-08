@@ -23,7 +23,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
   final countryController = TextEditingController();
   List<XFile>? _imageFileList;
   @override
-  void initState() async {
+  void initState() {
     super.initState();
     homeAddressController.text = widget.myUserInfo.homeAddress == null
         ? ''
@@ -33,16 +33,6 @@ class _PersonalInfoState extends State<PersonalInfo> {
         : '${widget.myUserInfo.phoneNumber}';
     countryController.text =
         widget.myUserInfo.country == null ? '' : '${widget.myUserInfo.country}';
-    if (widget.myUserInfo.profilePic != null) {
-      var profilePicBase64 = widget.myUserInfo.profilePic as String;
-      final temp = await getTemporaryDirectory();
-      var profilePicTemporaryFile = File('${temp.path}/imageFromFirebase.jpg');
-      await profilePicTemporaryFile.create(recursive: true);
-      var imageInBytes = base64Decode(profilePicBase64);
-      await File(profilePicTemporaryFile.path).writeAsBytes(imageInBytes);
-      var tempList;
-      _imageFileList = tempList.add(XFile(profilePicTemporaryFile.path));
-    }
   }
 
   final ImagePicker _picker = ImagePicker();
@@ -79,7 +69,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                     controller: homeAddressController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: 'title',
+                      hintText: 'Home Address',
                     ),
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -151,15 +141,37 @@ class _PersonalInfoState extends State<PersonalInfo> {
                 ])));
   }
 
+  Future<dynamic> getImageFromDatabase() async {
+    if (widget.myUserInfo.profilePic == null) {
+      return null;
+    }
+
+    final temp = await getTemporaryDirectory();
+    var profilePicTemporaryFile = File('${temp.path}/imageFromFirebase.jpg');
+    await profilePicTemporaryFile.create(recursive: true);
+    var imageInBytes = base64Decode(widget.myUserInfo.profilePic as String);
+    await File(profilePicTemporaryFile.path).writeAsBytes(imageInBytes);
+    var tempList = [XFile(profilePicTemporaryFile.path)];
+    _imageFileList = tempList;
+  }
+
   Widget imageProfile() {
     return Center(
       child: Stack(children: <Widget>[
-        CircleAvatar(
-          radius: 80.0,
-          backgroundImage: _imageFileList == null
-              ? null
-              : FileImage(File(_imageFileList![0].path)),
-        ),
+        FutureBuilder(
+            future: getImageFromDatabase(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                // futurer hasn't finished yet, return a place holder
+                return Text('Loading');
+              }
+              return CircleAvatar(
+                radius: 80.0,
+                backgroundImage: _imageFileList == null
+                    ? null
+                    : FileImage(File(_imageFileList![0].path)),
+              );
+            }),
         Positioned(
           bottom: 20.0,
           right: 20.0,
