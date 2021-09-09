@@ -107,6 +107,12 @@ class _PersonalInfoState extends State<PersonalInfo> {
                       return null;
                     },
                   ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('CANCEL'),
+                  ),
                   ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
