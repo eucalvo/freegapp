@@ -144,15 +144,15 @@ class _PersonalInfoState extends State<PersonalInfo> {
   Future<dynamic> getImageFromDatabase() async {
     if (widget.myUserInfo.profilePic == null) {
       return null;
+    } else if (_imageFileList == null) {
+      final temp = await getTemporaryDirectory();
+      var profilePicTemporaryFile = File('${temp.path}/imageFromFirebase.jpg');
+      await profilePicTemporaryFile.create(recursive: true);
+      var imageInBytes = base64Decode(widget.myUserInfo.profilePic as String);
+      await File(profilePicTemporaryFile.path).writeAsBytes(imageInBytes);
+      var tempList = [XFile(profilePicTemporaryFile.path)];
+      _imageFileList = tempList;
     }
-
-    final temp = await getTemporaryDirectory();
-    var profilePicTemporaryFile = File('${temp.path}/imageFromFirebase.jpg');
-    await profilePicTemporaryFile.create(recursive: true);
-    var imageInBytes = base64Decode(widget.myUserInfo.profilePic as String);
-    await File(profilePicTemporaryFile.path).writeAsBytes(imageInBytes);
-    var tempList = [XFile(profilePicTemporaryFile.path)];
-    _imageFileList = tempList;
   }
 
   Widget imageProfile() {
