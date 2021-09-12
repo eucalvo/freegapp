@@ -179,6 +179,8 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
     String country,
     int phoneNumber,
     String profilePic,
+    double latitude,
+    double longitude,
   ) async {
     await instance.collection('users').doc(auth.currentUser!.uid).set({
       'homeAddress': homeAddress,
@@ -187,6 +189,8 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
       'profilePic': profilePic,
       'name': auth.currentUser!.displayName,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
+      'latitude': latitude,
+      'longitude': longitude,
     });
   }
 
@@ -208,6 +212,8 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
           homeAddress: documentSnapshot['homeAddress'],
           phoneNumber: documentSnapshot['phoneNumber'],
           profilePic: documentSnapshot['profilePic'],
+          latitude: documentSnapshot['latitude'],
+          longitude: documentSnapshot['longitude'],
         );
         // data = documentSnapshot.data();
       } else {

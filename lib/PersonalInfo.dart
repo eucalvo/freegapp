@@ -8,11 +8,15 @@ import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 class PersonalInfo extends StatefulWidget {
-  PersonalInfo({Key? key, required this.myUserInfo})
-      : super(key: key); // Initializes key for subclasses.
-  final MyUserInfo myUserInfo;
+  PersonalInfo({
+    Key? key,
+  }) : super(key: key); // Initializes key for subclasses.
   @override
   _PersonalInfoState createState() => _PersonalInfoState();
 }
@@ -22,18 +26,8 @@ class _PersonalInfoState extends State<PersonalInfo> {
   final phoneNumberController = TextEditingController();
   final countryController = TextEditingController();
   List<XFile>? _imageFileList;
-  @override
-  void initState() {
-    super.initState();
-    homeAddressController.text = widget.myUserInfo.homeAddress == null
-        ? ''
-        : '${widget.myUserInfo.homeAddress}';
-    phoneNumberController.text = widget.myUserInfo.phoneNumber == null
-        ? ''
-        : '${widget.myUserInfo.phoneNumber}';
-    countryController.text =
-        widget.myUserInfo.country == null ? '' : '${widget.myUserInfo.country}';
-  }
+  var currentAddress;
+  var currentPosition;
 
   final ImagePicker _picker = ImagePicker();
   final ImagePickerMock _mockPicker = ImagePickerMock();
@@ -54,118 +48,148 @@ class _PersonalInfoState extends State<PersonalInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Form(
-            key: _formKey,
-            child: ListView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-                children: <Widget>[
-                  imageProfile(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    key: Key('homeAddressPersonalInfo'),
-                    controller: homeAddressController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Home Address',
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Enter your home Address';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    key: Key('phoneNumberPersonalInfo'),
-                    controller: phoneNumberController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Phone Number',
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Enter your phone number';
-                      }
-                      return null;
-                    },
-                    keyboardType: TextInputType.number,
-                  ),
-                  TextFormField(
-                    key: Key('phoneNumberPersonalInfo'),
-                    controller: countryController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Country',
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Enter your country';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('CANCEL'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        try {
-                          final profilePic =
-                              await readImagesToBase64(_imageFileList);
-                          if (Platform.environment
-                                  .containsKey('FLUTTER_TEST') ==
-                              true) {
-                            await ApplicationStateFirebaseMock()
-                                .addDocumentToUsers(
-                                    homeAddressController.text,
-                                    countryController.text,
-                                    int.parse(phoneNumberController.text),
-                                    profilePic[0]);
-                          } else {
-                            await ApplicationStateFirebase().addDocumentToUsers(
-                                homeAddressController.text,
-                                countryController.text,
-                                int.parse(phoneNumberController.text),
-                                profilePic[0]);
-                          }
-                          Navigator.pop(context);
-                          // Navigator.of(context).pop();
-                        } on Exception catch (e) {
-                          _showErrorDialog(context, 'No Image Selected', e);
-                        }
-                      }
-                    },
-                    child: const Text('Save'),
-                  )
-                ])));
+        body: Consumer<ApplicationStateFirebase>(
+            builder: (context, appState, _) => FutureBuilder(
+                future: getFormFillFromDatabase(appState.myUserInfo),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    // futurer hasn't finished yet, return a place holder
+                    return Text('Loading');
+                  }
+                  return Form(
+                      key: _formKey,
+                      child: ListView(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 30),
+                          children: <Widget>[
+                            imageProfile(appState.myUserInfo.profilePic),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            TextFormField(
+                              key: Key('homeAddressPersonalInfo'),
+                              controller: homeAddressController,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: 'Home Address',
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Enter your home Address';
+                                }
+                                return null;
+                              },
+                            ),
+                            TextFormField(
+                              key: Key('phoneNumberPersonalInfo'),
+                              controller: phoneNumberController,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: 'Phone Number',
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Enter your phone number';
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.number,
+                            ),
+                            TextFormField(
+                              key: Key('phoneNumberPersonalInfo'),
+                              controller: countryController,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: 'Country',
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Enter your country';
+                                }
+                                return null;
+                              },
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text('CANCEL'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  try {
+                                    final profilePic = await readImagesToBase64(
+                                        _imageFileList);
+                                    var homeAddressPosition =
+                                        await _determinePosition();
+                                    if (Platform.environment
+                                            .containsKey('FLUTTER_TEST') ==
+                                        true) {
+                                      await ApplicationStateFirebaseMock()
+                                          .addDocumentToUsers(
+                                              homeAddressController.text,
+                                              countryController.text,
+                                              int.parse(
+                                                  phoneNumberController.text),
+                                              profilePic[0],
+                                              homeAddressPosition.latitude,
+                                              homeAddressPosition.longitude);
+                                    } else {
+                                      await ApplicationStateFirebase()
+                                          .addDocumentToUsers(
+                                              homeAddressController.text,
+                                              countryController.text,
+                                              int.parse(
+                                                  phoneNumberController.text),
+                                              profilePic[0],
+                                              homeAddressPosition.latitude,
+                                              homeAddressPosition.longitude);
+                                    }
+                                    Navigator.pop(context);
+                                    // Navigator.of(context).pop();
+                                  } on Exception catch (e) {
+                                    _showErrorDialog(
+                                        context, 'No Image Selected', e);
+                                  }
+                                }
+                              },
+                              child: const Text('Save'),
+                            )
+                          ]));
+                })));
   }
 
-  Future<dynamic> getImageFromDatabase() async {
-    if (widget.myUserInfo.profilePic == null) {
+  Future<dynamic> getFormFillFromDatabase(MyUserInfo object) async {
+    homeAddressController.text = object.homeAddress as String;
+    phoneNumberController.text = object.phoneNumber.toString();
+    countryController.text = object.country as String;
+  }
+
+  Future<dynamic> getImageFromDatabase(String? myProfilePic) async {
+    if (myProfilePic == null) {
       return null;
     } else if (_imageFileList == null) {
+      print('we get here');
       final temp = await getTemporaryDirectory();
       var profilePicTemporaryFile = File('${temp.path}/imageFromFirebase.jpg');
-      await profilePicTemporaryFile.create(recursive: true);
-      var imageInBytes = base64Decode(widget.myUserInfo.profilePic as String);
+      // if (profilePicTemporaryFile.existsSync() == true) {
+      //   await profilePicTemporaryFile.delete();
+      // }
+      // await profilePicTemporaryFile.create(recursive: true);
+      var imageInBytes = base64Decode(myProfilePic);
+      imageCache?.clear();
       await File(profilePicTemporaryFile.path).writeAsBytes(imageInBytes);
       var tempList = [XFile(profilePicTemporaryFile.path)];
       _imageFileList = tempList;
     }
   }
 
-  Widget imageProfile() {
+  Widget imageProfile(String? profilePicture) {
     return Center(
       child: Stack(children: <Widget>[
         FutureBuilder(
-            future: getImageFromDatabase(),
+            future: getImageFromDatabase(profilePicture),
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
                 // futurer hasn't finished yet, return a place holder
@@ -255,6 +279,49 @@ class _PersonalInfoState extends State<PersonalInfo> {
       temp[i] = base64Encode(imageToBytes[i]);
     }
     return temp;
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      await Fluttertoast.showToast(msg: 'Please enable Your Location Service');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        await Fluttertoast.showToast(msg: 'Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      await Fluttertoast.showToast(
+          msg:
+              'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    var position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.bestForNavigation);
+
+    try {
+      var placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
+
+      var place = placemarks[0];
+
+      setState(() {
+        currentPosition = position;
+        currentAddress =
+            '${place.locality}, ${place.postalCode}, ${place.country}';
+      });
+    } on Exception catch (e) {
+      _showErrorDialog(context, 'idk', e);
+    }
+    return position;
   }
 
   // Text? _getRetrieveErrorWidget() {

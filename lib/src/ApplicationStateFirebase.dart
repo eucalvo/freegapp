@@ -13,6 +13,8 @@ class ApplicationStateFirebase extends ChangeNotifier {
     init();
   }
   StreamSubscription<QuerySnapshot>? _foodSubscription;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
+      _usersSubscription;
   List<Food> _foods = [];
   MyUserInfo _myUserInfo = MyUserInfo();
   List<Food> get foodList => _foods;
@@ -20,10 +22,31 @@ class ApplicationStateFirebase extends ChangeNotifier {
 
   Future<void> init() async {
     await Firebase.initializeApp();
-    await getUserInfoFromUsers();
     FirebaseAuth.instance.userChanges().listen((user) {
       if (user != null) {
         _loginState = ApplicationLoginState.loggedIn;
+        _usersSubscription = FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .snapshots()
+            .listen((DocumentSnapshot documentSnapshot) {
+          if (documentSnapshot.exists) {
+            _myUserInfo = MyUserInfo(
+              userId: documentSnapshot.id,
+              name: documentSnapshot['name'],
+              country: documentSnapshot['country'],
+              homeAddress: documentSnapshot['homeAddress'],
+              phoneNumber: documentSnapshot['phoneNumber'],
+              profilePic: documentSnapshot['profilePic'],
+              latitude: documentSnapshot['latitude'],
+              longitude: documentSnapshot['longitude'],
+            );
+            // data = documentSnapshot.data();
+          } else {
+            _myUserInfo = MyUserInfo();
+          }
+          notifyListeners();
+        });
         _foodSubscription = FirebaseFirestore.instance
             .collection('food')
             .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
@@ -49,7 +72,9 @@ class ApplicationStateFirebase extends ChangeNotifier {
       } else {
         _loginState = ApplicationLoginState.loggedOut;
         _foods = [];
+        _myUserInfo = MyUserInfo();
         _foodSubscription?.cancel();
+        _usersSubscription?.cancel();
       }
       notifyListeners();
     });
@@ -147,6 +172,8 @@ class ApplicationStateFirebase extends ChangeNotifier {
     String country,
     int phoneNumber,
     String profilePic,
+    double latitude,
+    double longitude,
   ) async {
     await FirebaseFirestore.instance
         .collection('users')
@@ -158,33 +185,12 @@ class ApplicationStateFirebase extends ChangeNotifier {
       'profilePic': profilePic,
       'name': FirebaseAuth.instance.currentUser!.displayName,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
+      'latitude': latitude,
+      'longitude': longitude,
     });
   }
 
   void seeYouSpaceCowboy(id) {
     FirebaseFirestore.instance.collection('food').doc(id).delete();
-  }
-
-  Future<void> getUserInfoFromUsers() async {
-    print('do me');
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get()
-        .then((DocumentSnapshot documentSnapshot) {
-      if (documentSnapshot.exists) {
-        _myUserInfo = MyUserInfo(
-          userId: documentSnapshot.id,
-          name: documentSnapshot['name'],
-          country: documentSnapshot['country'],
-          homeAddress: documentSnapshot['homeAddress'],
-          phoneNumber: documentSnapshot['phoneNumber'],
-          profilePic: documentSnapshot['profilePic'],
-        );
-        // data = documentSnapshot.data();
-      } else {
-        _myUserInfo = MyUserInfo();
-      }
-    });
   }
 }

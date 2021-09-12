@@ -5,7 +5,7 @@ import 'package:freegapp/src/ApplicationStateFirebase.dart';
 import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
 import 'package:freegapp/src/Food.dart';
 import 'dart:convert';
-import 'package:freegapp/AddFoodCustomForm.dart';
+import 'package:freegapp/src/SellingNavigationMaterialRoutes/AddFoodCustomForm.dart';
 import 'package:provider/provider.dart';
 
 class Selling extends StatefulWidget {
@@ -28,18 +28,8 @@ class _SellingState extends State<Selling> {
           ElevatedButton(onPressed: () {}, child: Text('Go live')),
           ElevatedButton(
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Platform.environment
-                                  .containsKey('FLUTTER_TEST') ==
-                              true
-                          ? Consumer<ApplicationStateFirebaseMock>(
-                              builder: (context, appState, _) =>
-                                  PersonalInfo(myUserInfo: appState.myUserInfo))
-                          : Consumer<ApplicationStateFirebase>(
-                              builder: (context, appState, _) => PersonalInfo(
-                                  myUserInfo: appState.myUserInfo))));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => PersonalInfo()));
             },
             child: Consumer<ApplicationStateFirebase>(
                 builder: (context, appState, _) => CircleAvatar(
