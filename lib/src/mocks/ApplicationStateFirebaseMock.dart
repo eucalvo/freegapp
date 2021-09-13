@@ -47,7 +47,7 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
   }
 
   List<Food> _foods = [];
-  MyUserInfo _myUserInfo = null as MyUserInfo;
+  MyUserInfo _myUserInfo = MyUserInfo();
   List<Food> get foodList => _foods;
   MyUserInfo get myUserInfo => _myUserInfo;
 
@@ -55,8 +55,29 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
   ApplicationLoginState get loginState => _loginState;
 
   Future<void> init() async {
-    await getUserInfoFromUsers();
     var i = 0;
+    instance
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .snapshots()
+        .listen((documentSnapshot) {
+      if (documentSnapshot.exists) {
+        _myUserInfo = MyUserInfo(
+          userId: documentSnapshot.id,
+          name: documentSnapshot['name'],
+          country: documentSnapshot['country'],
+          homeAddress: documentSnapshot['homeAddress'],
+          phoneNumber: documentSnapshot['phoneNumber'],
+          profilePic: documentSnapshot['profilePic'],
+          latitude: documentSnapshot['latitude'],
+          longitude: documentSnapshot['longitude'],
+        );
+        // data = documentSnapshot.data();
+      } else {
+        _myUserInfo = MyUserInfo();
+      }
+      notifyListeners();
+    });
     instance
         .collection('food')
         .where('userId', isEqualTo: auth.currentUser!.uid)
@@ -196,29 +217,5 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
 
   void seeYouSpaceCowboy(id) {
     instance.collection('food').doc(id).delete();
-  }
-
-  Future<void> getUserInfoFromUsers() async {
-    await instance
-        .collection('users')
-        .doc(auth.currentUser!.uid)
-        .get()
-        .then((documentSnapshot) {
-      if (documentSnapshot.exists) {
-        _myUserInfo = MyUserInfo(
-          userId: documentSnapshot['userId'],
-          name: documentSnapshot['name'],
-          country: documentSnapshot['country'],
-          homeAddress: documentSnapshot['homeAddress'],
-          phoneNumber: documentSnapshot['phoneNumber'],
-          profilePic: documentSnapshot['profilePic'],
-          latitude: documentSnapshot['latitude'],
-          longitude: documentSnapshot['longitude'],
-        );
-        // data = documentSnapshot.data();
-      } else {
-        _myUserInfo = null as MyUserInfo;
-      }
-    });
   }
 }
