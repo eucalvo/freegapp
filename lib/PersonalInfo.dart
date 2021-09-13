@@ -32,10 +32,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
   final ImagePicker _picker = ImagePicker();
   final ImagePickerMock _mockPicker = ImagePickerMock();
   final _formKey = GlobalKey<FormState>(debugLabel: '_PersonalInfoState');
-  // String? _retrieveDataError;
-  // set _imageFile(XFile? value) {
-  //   _imageFileList = value == null ? null : [value];
-  // }
+
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
@@ -121,7 +118,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                   try {
                                     final profilePic = await readImagesToBase64(
                                         _imageFileList);
-                                    var homeAddressPosition =
+                                    var homePosition =
                                         await _determinePosition();
                                     if (Platform.environment
                                             .containsKey('FLUTTER_TEST') ==
@@ -133,8 +130,8 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                               int.parse(
                                                   phoneNumberController.text),
                                               profilePic[0],
-                                              homeAddressPosition.latitude,
-                                              homeAddressPosition.longitude);
+                                              homePosition.latitude,
+                                              homePosition.longitude);
                                     } else {
                                       await ApplicationStateFirebase()
                                           .addDocumentToUsers(
@@ -143,8 +140,8 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                               int.parse(
                                                   phoneNumberController.text),
                                               profilePic[0],
-                                              homeAddressPosition.latitude,
-                                              homeAddressPosition.longitude);
+                                              homePosition.latitude,
+                                              homePosition.longitude);
                                     }
                                     Navigator.pop(context);
                                     // Navigator.of(context).pop();
@@ -323,32 +320,6 @@ class _PersonalInfoState extends State<PersonalInfo> {
     }
     return position;
   }
-
-  // Text? _getRetrieveErrorWidget() {
-  //   if (_retrieveDataError != null) {
-  //     final result = Text(
-  //       _retrieveDataError!,
-  //       key: Key('_getRetrieveErrorWidgetPersonalInfo'),
-  //     );
-  //     _retrieveDataError = null;
-  //     return result;
-  //   }
-  //   return null;
-  // }
-
-  // Future<void> retrieveLostData() async {
-  //   final response = await _picker.retrieveLostData();
-  //   if (response.isEmpty) {
-  //     return;
-  //   }
-  //   if (response.file != null) {
-  //     setState(() {
-  //       _imageFile = response.file;
-  //     });
-  //   } else {
-  //     _retrieveDataError = response.exception!.code;
-  //   }
-  // }
 }
 
 void _showErrorDialog(BuildContext context, String title, Exception e) {
