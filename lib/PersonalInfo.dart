@@ -115,6 +115,12 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                 return null;
                               },
                             ),
+                            Row(
+                              children: [
+                                Expanded(child: Text('Latitude:')),
+                                Expanded(child: Text('Longitude'))
+                              ],
+                            ),
                             Row(children: [
                               Expanded(
                                   child: TextFormField(
