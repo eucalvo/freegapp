@@ -12,6 +12,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:country_picker/country_picker.dart';
+import 'package:flutter/services.dart';
 
 class PersonalInfo extends StatefulWidget {
   PersonalInfo({
@@ -25,6 +27,8 @@ class _PersonalInfoState extends State<PersonalInfo> {
   final homeAddressController = TextEditingController();
   final phoneNumberController = TextEditingController();
   final countryController = TextEditingController();
+  final latitudeController = TextEditingController();
+  final longitudeController = TextEditingController();
   List<XFile>? _imageFileList;
   var currentAddress;
   var currentPosition;
@@ -35,10 +39,13 @@ class _PersonalInfoState extends State<PersonalInfo> {
 
   @override
   void dispose() {
-    // Clean up the controller when the widget is disposed.
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
     homeAddressController.dispose();
     phoneNumberController.dispose();
     countryController.dispose();
+    latitudeController.dispose();
+    longitudeController.dispose();
     super.dispose();
   }
 
@@ -63,7 +70,38 @@ class _PersonalInfoState extends State<PersonalInfo> {
                             SizedBox(
                               height: 20,
                             ),
+                            ElevatedButton(
+                                onPressed: () async {
+                                  var homePosition = await _determinePosition();
+                                  latitudeController.text =
+                                      homePosition.latitude.toString();
+                                  longitudeController.text =
+                                      homePosition.longitude.toString();
+                                  try {
+                                    var placemarks =
+                                        await placemarkFromCoordinates(
+                                            homePosition.latitude,
+                                            homePosition.longitude);
+
+                                    homeAddressController.text =
+                                        '${placemarks[0].street}, ${placemarks[0].locality}, ${placemarks[0].administrativeArea}';
+                                    countryController.text =
+                                        placemarks[0].country as String;
+                                  } on Exception catch (e) {
+                                    _showErrorDialog(context, 'idk', e);
+                                  }
+                                },
+                                child: Text('Get Location')),
+                            Text('Home Address:', textAlign: TextAlign.center),
                             TextFormField(
+                              // onEditingComplete: () async {
+                              //   var coordinates = await locationFromAddress(
+                              //       homeAddressController.text);
+                              //   latitudeController.text =
+                              //       coordinates[0].latitude.toString();
+                              //   longitudeController.text =
+                              //       coordinates[0].longitude.toString();
+                              // },
                               key: Key('homeAddressPersonalInfo'),
                               controller: homeAddressController,
                               decoration: InputDecoration(
@@ -77,6 +115,109 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                 return null;
                               },
                             ),
+                            Row(children: [
+                              Expanded(
+                                  child: TextFormField(
+                                controller: countryController,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Country',
+                                ),
+                                readOnly: true,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Select Country';
+                                  }
+                                  return null;
+                                },
+                              )),
+                              Expanded(
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          showCountryPicker(
+                                            context: context,
+                                            //Optional.  Can be used to exclude(remove) one ore more country from the countries list (optional).
+                                            exclude: <String>['KN', 'MF'],
+                                            //Optional. Shows phone code before the country name.
+                                            onSelect: (Country country) {
+                                              var countryWithCode = country
+                                                  .displayNameNoCountryCode;
+                                              var countryWithoutCode =
+                                                  countryWithCode.substring(
+                                                      0,
+                                                      countryWithCode
+                                                          .indexOf('('));
+                                              countryController.text =
+                                                  countryWithoutCode
+                                                      .trimRight();
+                                              ;
+                                            },
+                                            // Optional. Sets the theme for the country list picker.
+                                            countryListTheme:
+                                                CountryListThemeData(
+                                              // Optional. Sets the border radius for the bottomsheet.
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(40.0),
+                                                topRight: Radius.circular(40.0),
+                                              ),
+                                              // Optional. Styles the search field.
+                                              inputDecoration: InputDecoration(
+                                                labelText: 'Search',
+                                                hintText:
+                                                    'Start typing to search',
+                                                prefixIcon:
+                                                    const Icon(Icons.search),
+                                                border: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color:
+                                                        const Color(0xFF8C98A8)
+                                                            .withOpacity(0.2),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        });
+                                      },
+                                      child: Text('select Country')))
+                            ]),
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: TextFormField(
+                                  controller: latitudeController,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    hintText: 'latitude',
+                                  ),
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'manually find latitude through google or tap get location';
+                                    }
+                                    return null;
+                                  },
+                                )),
+                                Expanded(
+                                    child: TextFormField(
+                                  controller: longitudeController,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    hintText: 'longitude',
+                                  ),
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'manually find longitude through google or tap to get location';
+                                    }
+                                    return null;
+                                  },
+                                ))
+                              ],
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text('Phone Number:'),
                             TextFormField(
                               key: Key('phoneNumberPersonalInfo'),
                               controller: phoneNumberController,
@@ -84,6 +225,9 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                 border: OutlineInputBorder(),
                                 hintText: 'Phone Number',
                               ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return 'Enter your phone number';
@@ -91,20 +235,6 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                 return null;
                               },
                               keyboardType: TextInputType.number,
-                            ),
-                            TextFormField(
-                              key: Key('phoneNumberPersonalInfo'),
-                              controller: countryController,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: 'Country',
-                              ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Enter your country';
-                                }
-                                return null;
-                              },
                             ),
                             TextButton(
                               onPressed: () {
@@ -118,8 +248,6 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                   try {
                                     final profilePic = await readImagesToBase64(
                                         _imageFileList);
-                                    var homePosition =
-                                        await _determinePosition();
                                     if (Platform.environment
                                             .containsKey('FLUTTER_TEST') ==
                                         true) {
@@ -130,8 +258,10 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                               int.parse(
                                                   phoneNumberController.text),
                                               profilePic[0],
-                                              homePosition.latitude,
-                                              homePosition.longitude);
+                                              double.parse(
+                                                  latitudeController.text),
+                                              double.parse(
+                                                  longitudeController.text));
                                     } else {
                                       await ApplicationStateFirebase()
                                           .addDocumentToUsers(
@@ -140,8 +270,10 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                               int.parse(
                                                   phoneNumberController.text),
                                               profilePic[0],
-                                              homePosition.latitude,
-                                              homePosition.longitude);
+                                              double.parse(
+                                                  latitudeController.text),
+                                              double.parse(
+                                                  longitudeController.text));
                                     }
                                     Navigator.pop(context);
                                     // Navigator.of(context).pop();
@@ -161,6 +293,8 @@ class _PersonalInfoState extends State<PersonalInfo> {
     homeAddressController.text = object.homeAddress as String;
     phoneNumberController.text = object.phoneNumber.toString();
     countryController.text = object.country as String;
+    latitudeController.text = object.latitude.toString();
+    longitudeController.text = object.longitude.toString();
   }
 
   Future<dynamic> getImageFromDatabase(String? myProfilePic) async {
@@ -304,20 +438,6 @@ class _PersonalInfoState extends State<PersonalInfo> {
     var position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.bestForNavigation);
 
-    try {
-      var placemarks =
-          await placemarkFromCoordinates(position.latitude, position.longitude);
-
-      var place = placemarks[0];
-
-      setState(() {
-        currentPosition = position;
-        currentAddress =
-            '${place.locality}, ${place.postalCode}, ${place.country}';
-      });
-    } on Exception catch (e) {
-      _showErrorDialog(context, 'idk', e);
-    }
     return position;
   }
 }

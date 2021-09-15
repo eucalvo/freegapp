@@ -56,6 +56,7 @@ dependencies:
   geolocator: ^7.6.0
   geocoding: ^2.0.1
   fluttertoast: ^8.0.8
+  country_picker: ^2.0.8
 
 dev_dependencies:
   flutter_test:
