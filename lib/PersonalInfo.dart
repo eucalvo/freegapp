@@ -94,14 +94,19 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                 child: Text('Get Location')),
                             Text('Home Address:', textAlign: TextAlign.center),
                             TextFormField(
-                              // onEditingComplete: () async {
-                              //   var coordinates = await locationFromAddress(
-                              //       homeAddressController.text);
-                              //   latitudeController.text =
-                              //       coordinates[0].latitude.toString();
-                              //   longitudeController.text =
-                              //       coordinates[0].longitude.toString();
-                              // },
+                              onEditingComplete: () async {
+                                try {
+                                  var coordinates = await locationFromAddress(
+                                      homeAddressController.text);
+                                  latitudeController.text =
+                                      coordinates[0].latitude.toString();
+                                  longitudeController.text =
+                                      coordinates[0].longitude.toString();
+                                  FocusScope.of(context).unfocus();
+                                } on Exception catch (e) {
+                                  _showErrorDialog(context, 'idk', e);
+                                }
+                              },
                               key: Key('homeAddressPersonalInfo'),
                               controller: homeAddressController,
                               decoration: InputDecoration(
@@ -114,12 +119,6 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                 }
                                 return null;
                               },
-                            ),
-                            Row(
-                              children: [
-                                Expanded(child: Text('Latitude:')),
-                                Expanded(child: Text('Longitude'))
-                              ],
                             ),
                             Row(children: [
                               Expanded(
@@ -190,6 +189,12 @@ class _PersonalInfoState extends State<PersonalInfo> {
                             ]),
                             Row(
                               children: [
+                                Expanded(child: Text('Latitude:')),
+                                Expanded(child: Text('Longitude'))
+                              ],
+                            ),
+                            Row(
+                              children: [
                                 Expanded(
                                     child: TextFormField(
                                   controller: latitudeController,
@@ -251,6 +256,21 @@ class _PersonalInfoState extends State<PersonalInfo> {
                             ElevatedButton(
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
+                                  if (appState.myUserInfo ==
+                                      MyUserInfo(
+                                          userId: appState.myUserInfo.userId,
+                                          name: appState.myUserInfo.name,
+                                          homeAddress:
+                                              homeAddressController.text,
+                                          country: countryController.text,
+                                          latitude: double.parse(
+                                              latitudeController.text),
+                                          longitude: double.parse(
+                                              longitudeController.text),
+                                          phoneNumber: int.parse(
+                                              phoneNumberController.text))) {
+                                    Navigator.pop(context);
+                                  }
                                   try {
                                     final profilePic = await readImagesToBase64(
                                         _imageFileList);
