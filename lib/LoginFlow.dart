@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freegapp/PersonalInfo.dart';
+import 'package:freegapp/src/ApplicationStateFirebase.dart';
 import 'package:freegapp/src/LoginFlowForms/EmailFormLogin.dart';
 import 'package:freegapp/src/LoginFlowForms/PasswordFormLogin.dart';
 import 'package:freegapp/Selling.dart';
@@ -85,12 +87,18 @@ class LoginFlow extends StatelessWidget {
           },
         );
       case ApplicationLoginState.loggedIn:
-        return Selling(
-          logout: () {
+        if (ApplicationStateFirebase().myUserInfo.userId == null) {
+          return PersonalInfo(logout: () {
             signOut();
-          },
-          key: Key('Selling'),
-        );
+          });
+        } else {
+          return Selling(
+            logout: () {
+              signOut();
+            },
+            key: Key('Selling'),
+          );
+        }
       default:
         return Row(
           children: const [

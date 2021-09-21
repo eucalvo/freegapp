@@ -28,8 +28,12 @@ class _SellingState extends State<Selling> {
           ElevatedButton(onPressed: () {}, child: Text('Go live')),
           ElevatedButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => PersonalInfo()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PersonalInfo(logout: () {
+                            widget.logout();
+                          })));
             },
             child: Consumer<ApplicationStateFirebase>(
                 builder: (context, appState, _) => CircleAvatar(
