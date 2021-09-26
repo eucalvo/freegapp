@@ -30,6 +30,7 @@ void main() {
                     cancelRegistration: appState.cancelRegistration,
                     registerAccount: appState.registerAccount,
                     signOut: appState.signOut,
+                    myUserInfo: appState.myUserInfo,
                     key: Key('LoginFlow'))))));
     expect(find.byKey(Key('EmailFormLogin')), findsOneWidget);
     // Enter 'bob@thebuilder.com' into the TextField.
@@ -55,6 +56,9 @@ void main() {
     await tester.tap(find.text('SIGN IN'));
     await tester.pump();
     expect(find.byKey(Key('Selling')), findsOneWidget);
+    await tester.tap(find.text('Logout'));
+    await tester.pump();
+    expect(find.byKey(Key('EmailFormLogin')), findsOneWidget);
   });
   testWidgets('Go to register page', (WidgetTester tester) async {
     await tester.pumpWidget(ChangeNotifierProvider(
@@ -71,6 +75,7 @@ void main() {
                     cancelRegistration: appState.cancelRegistration,
                     registerAccount: appState.registerAccount,
                     signOut: appState.signOut,
+                    myUserInfo: appState.myUserInfo,
                     key: Key('LoginFlow'))))));
     expect(find.byKey(Key('EmailFormLogin')), findsOneWidget);
     // Enter 'dom@thebuilder.com' into the TextField.

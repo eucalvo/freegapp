@@ -49,7 +49,6 @@ Future<List<String>> loadStringFromAssets() async {
     var image1 = await rootBundle.load('assets/imagesTesting/cow1.jpg');
     var image2 = await rootBundle.load('assets/imagesTesting/cow2.jpg');
     var image3 = await rootBundle.load('assets/imagesTesting/cow3.jpg');
-    image1.buffer;
     await File(imagePath1.path).writeAsBytes(
         image1.buffer.asUint8List(image1.offsetInBytes, image1.lengthInBytes));
     await File(imagePath2.path).writeAsBytes(

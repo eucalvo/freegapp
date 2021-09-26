@@ -35,15 +35,27 @@ class _SellingState extends State<Selling> {
                             widget.logout();
                           })));
             },
-            child: Consumer<ApplicationStateFirebase>(
-                builder: (context, appState, _) => CircleAvatar(
-                      radius: 40.0,
-                      backgroundImage: appState.myUserInfo.profilePic == null
-                          ? null
-                          : Image.memory(base64Decode(
-                                  appState.myUserInfo.profilePic as String))
-                              .image,
-                    )),
+            child: Platform.environment.containsKey('FLUTTER_TEST') == true
+                ? Consumer<ApplicationStateFirebaseMock>(
+                    builder: (context, appState, _) => CircleAvatar(
+                          radius: 40.0,
+                          backgroundImage: appState.myUserInfo.profilePic ==
+                                  null
+                              ? null
+                              : Image.memory(base64Decode(
+                                      appState.myUserInfo.profilePic as String))
+                                  .image,
+                        ))
+                : Consumer<ApplicationStateFirebase>(
+                    builder: (context, appState, _) => CircleAvatar(
+                          radius: 40.0,
+                          backgroundImage: appState.myUserInfo.profilePic ==
+                                  null
+                              ? null
+                              : Image.memory(base64Decode(
+                                      appState.myUserInfo.profilePic as String))
+                                  .image,
+                        )),
           ),
           ElevatedButton(
             onPressed: widget.logout,
@@ -63,50 +75,18 @@ class _SellingState extends State<Selling> {
                 builder: (context, appState, _) =>
                     FoodWidget(foodList: appState.foodList)),
       ),
-      floatingActionButton:
-          Platform.environment.containsKey('FLUTTER_TEST') == true
-              ? Consumer<ApplicationStateFirebaseMock>(
-                  builder: (context, appState, _) => FloatingActionButton(
-                        onPressed: () {
-                          if (appState.myUserInfo.userId == null) {
-                            _showErrorDialog(
-                                context,
-                                'Make Profile',
-                                FormatException(
-                                    'The Profile has not been set up or is incomplete'));
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AddFoodCustomForm(
-                                        key: Key('AddFoodCustomForm'),
-                                      )),
-                            );
-                          }
-                        },
-                        child: const Icon(Icons.add),
-                      ))
-              : Consumer<ApplicationStateFirebase>(
-                  builder: (context, appState, _) => FloatingActionButton(
-                        onPressed: () {
-                          if (appState.myUserInfo.userId == null) {
-                            _showErrorDialog(
-                                context,
-                                'Make Profile',
-                                FormatException(
-                                    'The Profile has not been set up or is incomplete'));
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AddFoodCustomForm(
-                                        key: Key('AddFoodCustomForm'),
-                                      )),
-                            );
-                          }
-                        },
-                        child: const Icon(Icons.add),
-                      )),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AddFoodCustomForm(
+                      key: Key('AddFoodCustomForm'),
+                    )),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
@@ -220,40 +200,4 @@ class _FoodWidgetState extends State<FoodWidget> {
     data['image3'] = image3;
     return json.encode(data);
   }
-}
-
-void _showErrorDialog(BuildContext context, String title, Exception e) {
-  showDialog<void>(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        key: Key('AlertDialogShowErrorDialogAddFoodCustomForm'),
-        title: Text(
-          title,
-          style: const TextStyle(fontSize: 24),
-        ),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text(
-                '${(e as dynamic).message}',
-                style: const TextStyle(fontSize: 18),
-              ),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text(
-              'OK',
-              style: TextStyle(color: Colors.deepPurple),
-            ),
-          ),
-        ],
-      );
-    },
-  );
 }

@@ -8,6 +8,12 @@ import 'package:freegapp/src/Food.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'dart:async';
 import 'package:freegapp/src/MyUserInfo.dart';
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:io';
+import 'package:flutter_test/flutter_test.dart';
 
 final tUser = MockUser(
   isAnonymous: false,
@@ -143,6 +149,14 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
         password: password,
       );
       if (result.user == tUser && password == 'T3STU1D') {
+        await addDocumentToUsers(
+            '123 nowhere st, Stockton, California',
+            'United States',
+            1234567890,
+            base64Encode(
+                File('assets/imagesTesting/cow1.jpg').readAsBytesSync()),
+            39.143879,
+            -121.655434);
         _loginState = ApplicationLoginState.loggedIn;
       } else {
         errorCallback(passwordError);
@@ -172,6 +186,8 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
 
   void signOut() {
     auth.signOut();
+    _loginState = ApplicationLoginState.loggedOut;
+    notifyListeners();
   }
 
   Future<void> addDocumentToFood(

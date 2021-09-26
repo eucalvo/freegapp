@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:freegapp/PersonalInfo.dart';
-import 'package:freegapp/src/ApplicationStateFirebase.dart';
 import 'package:freegapp/src/LoginFlowForms/EmailFormLogin.dart';
 import 'package:freegapp/src/LoginFlowForms/PasswordFormLogin.dart';
 import 'package:freegapp/Selling.dart';
 import 'package:freegapp/src/LoginFlowForms/RegisterFormLogin.dart';
+import 'package:freegapp/src/MyUserInfo.dart';
+import 'dart:io';
+import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
 
 enum ApplicationLoginState {
   loggedOut,
@@ -24,6 +26,7 @@ class LoginFlow extends StatelessWidget {
     required this.cancelRegistration,
     required this.registerAccount,
     required this.signOut,
+    required this.myUserInfo,
     Key? key,
   }) : super(key: key);
 
@@ -48,6 +51,7 @@ class LoginFlow extends StatelessWidget {
     void Function(Exception e) error,
   ) registerAccount;
   final void Function() signOut;
+  final MyUserInfo myUserInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -87,17 +91,39 @@ class LoginFlow extends StatelessWidget {
           },
         );
       case ApplicationLoginState.loggedIn:
-        if (ApplicationStateFirebase().myUserInfo.userId == null) {
-          return PersonalInfo(logout: () {
-            signOut();
-          });
+        if (Platform.environment.containsKey('FLUTTER_TEST') == true) {
+          if (myUserInfo.userId == null) {
+            return PersonalInfo(
+              key: Key('PersonalInfo'),
+              logout: () {
+                signOut();
+              },
+              myUserInfo: myUserInfo,
+            );
+          } else {
+            return Selling(
+              logout: () {
+                signOut();
+              },
+              key: Key('Selling'),
+            );
+          }
         } else {
-          return Selling(
-            logout: () {
-              signOut();
-            },
-            key: Key('Selling'),
-          );
+          if (myUserInfo.userId == null) {
+            return PersonalInfo(
+              logout: () {
+                signOut();
+              },
+              myUserInfo: myUserInfo,
+            );
+          } else {
+            return Selling(
+              logout: () {
+                signOut();
+              },
+              key: Key('Selling'),
+            );
+          }
         }
       default:
         return Row(

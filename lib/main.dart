@@ -78,6 +78,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           cancelRegistration: appState.cancelRegistration,
           registerAccount: appState.registerAccount,
           signOut: appState.signOut,
+          myUserInfo: appState.myUserInfo,
           key: Key('LoginFlow')),
     ),
   ];
