@@ -6,7 +6,6 @@ import 'package:freegapp/Selling.dart';
 import 'package:freegapp/src/LoginFlowForms/RegisterFormLogin.dart';
 import 'package:freegapp/src/MyUserInfo.dart';
 import 'dart:io';
-import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
 
 enum ApplicationLoginState {
   loggedOut,
