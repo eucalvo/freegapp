@@ -95,6 +95,6 @@ void main() {
         find.byKey(Key('PasswordRegisterFormLogin')), 'T3STU1D');
     await tester.tap(find.byType(ElevatedButton));
     await tester.pump();
-    expect(find.byKey(Key('Selling')), findsOneWidget);
+    expect(find.byKey(Key('PersonalInfo')), findsOneWidget);
   });
 }

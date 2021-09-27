@@ -111,6 +111,7 @@ class LoginFlow extends StatelessWidget {
         } else {
           if (myUserInfo.userId == null) {
             return PersonalInfo(
+              key: Key('PersonalInfo'),
               logout: () {
                 signOut();
               },
