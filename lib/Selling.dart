@@ -31,9 +31,23 @@ class _SellingState extends State<Selling> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => PersonalInfo(logout: () {
-                            widget.logout();
-                          })));
+                      builder: (context) => Platform.environment
+                                  .containsKey('FLUTTER_TEST') ==
+                              true
+                          ? Consumer<ApplicationStateFirebaseMock>(
+                              builder: (context, appState, _) => PersonalInfo(
+                                    logout: () {
+                                      widget.logout();
+                                    },
+                                    myUserInfo: appState.myUserInfo,
+                                  ))
+                          : Consumer<ApplicationStateFirebase>(
+                              builder: (context, appState, _) => PersonalInfo(
+                                    logout: () {
+                                      widget.logout();
+                                    },
+                                    myUserInfo: appState.myUserInfo,
+                                  ))));
             },
             child: Platform.environment.containsKey('FLUTTER_TEST') == true
                 ? Consumer<ApplicationStateFirebaseMock>(

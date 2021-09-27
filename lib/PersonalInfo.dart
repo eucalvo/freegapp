@@ -54,10 +54,9 @@ class _PersonalInfoState extends State<PersonalInfo> {
           ? ''
           : widget.myUserInfo.country.toString();
     } else {
-      countryController.text =
-          ApplicationStateFirebase().myUserInfo.country == null
-              ? ''
-              : ApplicationStateFirebase().myUserInfo.country.toString();
+      countryController.text = widget.myUserInfo.country == null
+          ? ''
+          : widget.myUserInfo.country.toString();
     }
     if (countryController.text.isEmpty) {
       _formIsVisible = false;
