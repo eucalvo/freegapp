@@ -62,51 +62,57 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
 
   Future<void> init() async {
     var i = 0;
-    instance
-        .collection('users')
-        .doc(auth.currentUser!.uid)
-        .snapshots()
-        .listen((documentSnapshot) {
-      if (documentSnapshot.exists) {
-        _myUserInfo = MyUserInfo(
-          userId: documentSnapshot.id,
-          name: documentSnapshot['name'],
-          country: documentSnapshot['country'],
-          homeAddress: documentSnapshot['homeAddress'],
-          phoneNumber: documentSnapshot['phoneNumber'],
-          profilePic: documentSnapshot['profilePic'],
-          latitude: documentSnapshot['latitude'],
-          longitude: documentSnapshot['longitude'],
-        );
-        // data = documentSnapshot.data();
-      } else {
-        _myUserInfo = MyUserInfo();
-      }
-      notifyListeners();
-    });
-    instance
-        .collection('food')
-        .where('userId', isEqualTo: auth.currentUser!.uid)
-        .orderBy('timestamp', descending: true)
-        .snapshots()
-        .listen((snapshot) {
-      _foods = [];
-      snapshot.docs.forEach((document) {
-        _foods.add(
-          Food(
-            documentID: '$i',
-            title: document.data()['title'],
-            description: document.data()['description'],
-            cost: document.data()['cost'].toDouble(),
-            image1: document.data()['image1'],
-            image2: document.data()['image2'] ?? '',
-            image3: document.data()['image3'] ?? '',
-          ),
-        );
-        i++;
+    if (auth.currentUser != null) {
+      instance
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .snapshots()
+          .listen((documentSnapshot) {
+        if (documentSnapshot.exists) {
+          _myUserInfo = MyUserInfo(
+            userId: documentSnapshot.id,
+            name: documentSnapshot['name'],
+            country: documentSnapshot['country'],
+            homeAddress: documentSnapshot['homeAddress'],
+            phoneNumber: documentSnapshot['phoneNumber'],
+            profilePic: documentSnapshot['profilePic'],
+            latitude: documentSnapshot['latitude'],
+            longitude: documentSnapshot['longitude'],
+          );
+          // data = documentSnapshot.data();
+        } else {
+          _myUserInfo = MyUserInfo();
+        }
+        notifyListeners();
       });
-      notifyListeners();
-    });
+      instance
+          .collection('food')
+          .where('userId', isEqualTo: auth.currentUser!.uid)
+          .orderBy('timestamp', descending: true)
+          .snapshots()
+          .listen((snapshot) {
+        _foods = [];
+        snapshot.docs.forEach((document) {
+          _foods.add(
+            Food(
+              documentID: '$i',
+              title: document.data()['title'],
+              description: document.data()['description'],
+              cost: document.data()['cost'].toDouble(),
+              image1: document.data()['image1'],
+              image2: document.data()['image2'] ?? '',
+              image3: document.data()['image3'] ?? '',
+            ),
+          );
+          i++;
+        });
+        notifyListeners();
+      });
+    } else {
+      _loginState = ApplicationLoginState.loggedOut;
+      _foods = [];
+      _myUserInfo = MyUserInfo();
+    }
     notifyListeners();
   }
 
