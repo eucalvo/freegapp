@@ -12,9 +12,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
-import 'package:country_picker/country_picker.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/src/services/asset_bundle.dart' show rootBundle;
 
 class PersonalInfo extends StatefulWidget {
   PersonalInfo({
@@ -31,7 +30,6 @@ class PersonalInfo extends StatefulWidget {
 class _PersonalInfoState extends State<PersonalInfo> {
   final homeAddressController = TextEditingController();
   final phoneNumberController = TextEditingController();
-  final countryController = TextEditingController();
   final latitudeController = TextEditingController();
   final longitudeController = TextEditingController();
   List<XFile>? _imageFileList;
@@ -42,33 +40,26 @@ class _PersonalInfoState extends State<PersonalInfo> {
   final ImagePickerMock _mockPicker = ImagePickerMock();
   final _formKey = GlobalKey<FormState>(debugLabel: '_PersonalInfoState');
   var _formIsVisible = true;
-  final _countryFormKey =
-      GlobalKey<FormState>(debugLabel: '_PersonalInfoState_countryFormKey');
+  String? countriesJsonString;
+  final defaultDropDownValue = 'Select Country';
+  var dropdownValue;
 
   @override
   void initState() {
     super.initState();
-
-    if (Platform.environment.containsKey('FLUTTER_TEST') == true) {
-      countryController.text = widget.myUserInfo.country == null
-          ? ''
-          : widget.myUserInfo.country.toString();
-    } else {
-      countryController.text = widget.myUserInfo.country == null
-          ? ''
-          : widget.myUserInfo.country.toString();
-    }
-    if (countryController.text.isEmpty) {
-      _formIsVisible = false;
-    }
-  }
-
-  bool _showRestOfForm() {
-    if (countryController.text.isEmpty) {
-      return false;
-    } else {
-      return true;
-    }
+    dropdownValue = widget.myUserInfo.country ?? defaultDropDownValue;
+    homeAddressController.text = widget.myUserInfo.homeAddress == null
+        ? ''
+        : widget.myUserInfo.homeAddress.toString();
+    phoneNumberController.text = widget.myUserInfo.phoneNumber == null
+        ? ''
+        : widget.myUserInfo.phoneNumber.toString();
+    latitudeController.text = widget.myUserInfo.latitude == null
+        ? ''
+        : widget.myUserInfo.latitude.toString();
+    longitudeController.text = widget.myUserInfo.longitude == null
+        ? ''
+        : widget.myUserInfo.longitude.toString();
   }
 
   @override
@@ -77,7 +68,6 @@ class _PersonalInfoState extends State<PersonalInfo> {
     // widget tree.
     homeAddressController.dispose();
     phoneNumberController.dispose();
-    countryController.dispose();
     latitudeController.dispose();
     longitudeController.dispose();
     super.dispose();
@@ -86,215 +76,67 @@ class _PersonalInfoState extends State<PersonalInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Platform.environment.containsKey('FLUTTER_TEST') == true
-            ? Consumer<ApplicationStateFirebaseMock>(
-                builder: (context, appState, _) => FutureBuilder(
-                    future: getFormFillFromDatabase(appState.myUserInfo),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState != ConnectionState.done) {
-                        // futurer hasn't finished yet, return a place holder
-                        return Text('Loading');
-                      }
-                      return Column(
-                        children: [
-                          Container(
-                              height: 160,
-                              width: MediaQuery.of(context).size.width,
-                              child:
-                                  imageProfile(appState.myUserInfo.profilePic)),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Form(
-                              key: _countryFormKey,
-                              child: Row(children: [
-                                Expanded(
-                                    child: TextFormField(
-                                  controller: countryController,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    hintText: 'Country',
-                                  ),
-                                  readOnly: true,
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Select Country';
-                                    }
-                                    return null;
-                                  },
-                                )),
-                                Expanded(
-                                    child: ElevatedButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            showCountryPicker(
-                                              context: context,
-                                              //Optional.  Can be used to exclude(remove) one ore more country from the countries list (optional).
-                                              exclude: <String>['KN', 'MF'],
-                                              //Optional. Shows phone code before the country name.
-                                              onSelect: (Country country) {
-                                                var countryWithCode = country
-                                                    .displayNameNoCountryCode;
-                                                var countryWithoutCode =
-                                                    countryWithCode.substring(
-                                                        0,
-                                                        countryWithCode
-                                                            .indexOf('('));
-                                                countryController.text =
-                                                    countryWithoutCode
-                                                        .trimRight();
-                                              },
-                                              // Optional. Sets the theme for the country list picker.
-                                              countryListTheme:
-                                                  CountryListThemeData(
-                                                // Optional. Sets the border radius for the bottomsheet.
-                                                borderRadius: BorderRadius.only(
-                                                  topLeft:
-                                                      Radius.circular(40.0),
-                                                  topRight:
-                                                      Radius.circular(40.0),
-                                                ),
-                                                // Optional. Styles the search field.
-                                                inputDecoration:
-                                                    InputDecoration(
-                                                  labelText: 'Search',
-                                                  hintText:
-                                                      'Start typing to search',
-                                                  prefixIcon:
-                                                      const Icon(Icons.search),
-                                                  border: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                      color: const Color(
-                                                              0xFF8C98A8)
-                                                          .withOpacity(0.2),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          });
-                                        },
-                                        child: Text('select Country'))),
-                                ElevatedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _formIsVisible = _showRestOfForm();
-                                        print(_formIsVisible);
-                                      });
-                                    },
-                                    child: Text('Next')),
-                              ])),
-                          Expanded(
-                              child: Visibility(
-                                  visible: _formIsVisible,
-                                  child: form(appState.myUserInfo))),
-                        ],
-                      );
-                    }))
-            : Consumer<ApplicationStateFirebase>(
-                builder: (context, appState, _) => FutureBuilder(
-                    future: getFormFillFromDatabase(appState.myUserInfo),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState != ConnectionState.done) {
-                        // futurer hasn't finished yet, return a place holder
-                        return Text('Loading');
-                      }
-                      return Column(
-                        children: [
-                          Container(
-                              height: 160,
-                              width: MediaQuery.of(context).size.width,
-                              child:
-                                  imageProfile(appState.myUserInfo.profilePic)),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Form(
-                              key: _countryFormKey,
-                              child: Row(children: [
-                                Expanded(
-                                    child: TextFormField(
-                                  controller: countryController,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    hintText: 'Country',
-                                  ),
-                                  readOnly: true,
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Select Country';
-                                    }
-                                    return null;
-                                  },
-                                )),
-                                Expanded(
-                                    child: ElevatedButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            showCountryPicker(
-                                              context: context,
-                                              //Optional.  Can be used to exclude(remove) one ore more country from the countries list (optional).
-                                              exclude: <String>['KN', 'MF'],
-                                              //Optional. Shows phone code before the country name.
-                                              onSelect: (Country country) {
-                                                var countryWithCode = country
-                                                    .displayNameNoCountryCode;
-                                                var countryWithoutCode =
-                                                    countryWithCode.substring(
-                                                        0,
-                                                        countryWithCode
-                                                            .indexOf('('));
-                                                countryController.text =
-                                                    countryWithoutCode
-                                                        .trimRight();
-                                              },
-                                              // Optional. Sets the theme for the country list picker.
-                                              countryListTheme:
-                                                  CountryListThemeData(
-                                                // Optional. Sets the border radius for the bottomsheet.
-                                                borderRadius: BorderRadius.only(
-                                                  topLeft:
-                                                      Radius.circular(40.0),
-                                                  topRight:
-                                                      Radius.circular(40.0),
-                                                ),
-                                                // Optional. Styles the search field.
-                                                inputDecoration:
-                                                    InputDecoration(
-                                                  labelText: 'Search',
-                                                  hintText:
-                                                      'Start typing to search',
-                                                  prefixIcon:
-                                                      const Icon(Icons.search),
-                                                  border: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                      color: const Color(
-                                                              0xFF8C98A8)
-                                                          .withOpacity(0.2),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          });
-                                        },
-                                        child: Text('select Country'))),
-                                ElevatedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _formIsVisible = _showRestOfForm();
-                                        print(_formIsVisible);
-                                      });
-                                    },
-                                    child: Text('Next')),
-                              ])),
-                          Expanded(
-                              child: Visibility(
-                                  visible: _formIsVisible,
-                                  child: form(appState.myUserInfo))),
-                        ],
-                      );
-                    })));
+        body: Column(
+      children: [
+        Container(
+            height: 160,
+            width: MediaQuery.of(context).size.width,
+            child: imageProfile(widget.myUserInfo.profilePic)),
+        SizedBox(
+          height: 20,
+        ),
+        FutureBuilder(
+            future: loadCountriesFromAsset(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                // futurer hasn't finished yet, return a place holder
+                return Text('Loading');
+              }
+              return DropdownButton<String>(
+                value: dropdownValue,
+                icon: const Icon(Icons.arrow_downward),
+                iconSize: 24,
+                elevation: 16,
+                style: const TextStyle(color: Colors.deepPurple),
+                underline: Container(
+                  height: 2,
+                  color: Colors.deepPurpleAccent,
+                ),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    dropdownValue = newValue!;
+                    if (dropdownValue == defaultDropDownValue) {
+                      _formIsVisible = false;
+                    } else {
+                      _formIsVisible = true;
+                    }
+                  });
+                },
+                items: List<String>.from(
+                        jsonDecode(countriesJsonString.toString())['names'])
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              );
+            }),
+        Expanded(
+            child: Visibility(
+                visible: _formIsVisible, child: form(widget.myUserInfo))),
+      ],
+    ));
+  }
+
+  Future<dynamic> loadCountriesFromAsset() async {
+    final contents = await rootBundle.loadString('assets/countries.json');
+    countriesJsonString = contents;
+    if (dropdownValue == defaultDropDownValue) {
+      _formIsVisible = false;
+    } else {
+      _formIsVisible = true;
+    }
   }
 
   Widget form(MyUserInfo userInfo) {
@@ -304,6 +146,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
             children: <Widget>[
               ElevatedButton(
+                  key: Key('GetLocationElevatedButtonPersonalInfo'),
                   onPressed: () async {
                     var homePosition = await _determinePosition();
                     latitudeController.text = homePosition.latitude.toString();
@@ -315,9 +158,11 @@ class _PersonalInfoState extends State<PersonalInfo> {
 
                       homeAddressController.text =
                           '${placemarks[0].street}, ${placemarks[0].locality}, ${placemarks[0].administrativeArea}';
-                      countryController.text = placemarks[0].country as String;
+                      setState(() {
+                        dropdownValue = placemarks[0].country.toString();
+                      });
                     } on Exception catch (e) {
-                      _showErrorDialog(context, 'idk', e);
+                      _showErrorDialog(context, 'please try again', e);
                     }
                   },
                   child: Text('Get Location')),
@@ -325,18 +170,18 @@ class _PersonalInfoState extends State<PersonalInfo> {
               TextFormField(
                 onEditingComplete: () async {
                   try {
-                    var coordinates =
-                        await locationFromAddress(homeAddressController.text);
+                    var coordinates = await locationFromAddress(
+                        dropdownValue + ', ' + homeAddressController.text);
                     latitudeController.text =
                         coordinates[0].latitude.toString();
                     longitudeController.text =
                         coordinates[0].longitude.toString();
                     FocusScope.of(context).unfocus();
                   } on Exception catch (e) {
-                    _showErrorDialog(context, 'idk', e);
+                    _showErrorDialog(context, 'please try again', e);
                   }
                 },
-                key: Key('homeAddressPersonalInfo'),
+                key: Key('homeAddressTextFormFieldPersonalInfo'),
                 controller: homeAddressController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -359,6 +204,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                 children: [
                   Expanded(
                       child: TextFormField(
+                    key: Key('LatitudeTextFormFieldPersonalInfo'),
                     controller: latitudeController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
@@ -373,6 +219,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                   )),
                   Expanded(
                       child: TextFormField(
+                    key: Key('LongitudeTextFormFieldPersonalInfo'),
                     controller: longitudeController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
@@ -392,7 +239,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
               ),
               Text('Phone Number:'),
               TextFormField(
-                key: Key('phoneNumberPersonalInfo'),
+                key: Key('phoneNumberTextFormFieldPersonalInfo'),
                 controller: phoneNumberController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -410,35 +257,40 @@ class _PersonalInfoState extends State<PersonalInfo> {
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    if (userInfo ==
-                        MyUserInfo(
-                            userId: userInfo.userId,
-                            name: userInfo.name,
-                            homeAddress: homeAddressController.text,
-                            country: countryController.text,
-                            latitude: double.parse(latitudeController.text),
-                            longitude: double.parse(longitudeController.text),
-                            phoneNumber:
-                                int.parse(phoneNumberController.text))) {
-                      if (Navigator.canPop(context)) {
-                        Navigator.pop(context);
-                      } else {
-                        await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Selling(logout: () {
-                                      widget.logout();
-                                    })));
-                      }
-                    }
                     try {
                       final profilePic =
                           await readImagesToBase64(_imageFileList);
+                      if (userInfo.profilePic == profilePic[0] &&
+                          userInfo.userId == userInfo.userId &&
+                          userInfo.name == userInfo.name &&
+                          userInfo.homeAddress == homeAddressController.text &&
+                          userInfo.country == dropdownValue &&
+                          userInfo.latitude ==
+                              double.parse(latitudeController.text) &&
+                          userInfo.longitude ==
+                              double.parse(longitudeController.text) &&
+                          userInfo.phoneNumber ==
+                              int.parse(phoneNumberController.text)) {
+                        print('we no go in here?');
+                        if (Navigator.canPop(context)) {
+                          print('we pop!');
+                          return Navigator.pop(context);
+                        } else {
+                          print('we push!');
+                          await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Selling(logout: () {
+                                        widget.logout();
+                                      })));
+                          return;
+                        }
+                      }
                       if (Platform.environment.containsKey('FLUTTER_TEST') ==
                           true) {
                         await ApplicationStateFirebaseMock().addDocumentToUsers(
                             homeAddressController.text,
-                            countryController.text,
+                            dropdownValue,
                             int.parse(phoneNumberController.text),
                             profilePic[0],
                             double.parse(latitudeController.text),
@@ -446,15 +298,17 @@ class _PersonalInfoState extends State<PersonalInfo> {
                       } else {
                         await ApplicationStateFirebase().addDocumentToUsers(
                             homeAddressController.text,
-                            countryController.text,
+                            dropdownValue,
                             int.parse(phoneNumberController.text),
                             profilePic[0],
                             double.parse(latitudeController.text),
                             double.parse(longitudeController.text));
                       }
                       if (Navigator.canPop(context)) {
+                        print('we pop2!');
                         Navigator.pop(context);
                       } else {
+                        print('we push2!');
                         await Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -471,21 +325,6 @@ class _PersonalInfoState extends State<PersonalInfo> {
                 child: const Text('Save'),
               )
             ]));
-  }
-
-  Future<dynamic> getFormFillFromDatabase(MyUserInfo object) async {
-    if (countryController.text.isNotEmpty &&
-        object.country != countryController.text) {
-      countryController.text == object.country;
-    }
-    homeAddressController.text =
-        object.homeAddress == null ? '' : object.homeAddress.toString();
-    phoneNumberController.text =
-        object.phoneNumber == null ? '' : object.phoneNumber.toString();
-    latitudeController.text =
-        object.latitude == null ? '' : object.latitude.toString();
-    longitudeController.text =
-        object.longitude == null ? '' : object.longitude.toString();
   }
 
   Future<dynamic> getImageFromDatabase(String? myProfilePic) async {
@@ -517,6 +356,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                 return Text('Loading');
               }
               return CircleAvatar(
+                key: Key('profilePicCircleAvatarPersonalInfo'),
                 radius: 80.0,
                 backgroundImage: _imageFileList == null
                     ? null
