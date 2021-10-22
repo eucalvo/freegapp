@@ -38,7 +38,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
 
   final ImagePicker _picker = ImagePicker();
   final ImagePickerMock _mockPicker = ImagePickerMock();
-  final _formKey = GlobalKey<FormState>(debugLabel: '_PersonalInfoState');
+  final _formKey = GlobalKey<FormState>(debugLabel: '_PersonalInfoStateForm');
   var _formIsVisible = true;
   String? countriesJsonString;
   final defaultDropDownValue = 'Select Country';
@@ -93,6 +93,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                 return Text('Loading');
               }
               return DropdownButton<String>(
+                key: Key('DropdownButtonPersonalInfo'),
                 value: dropdownValue,
                 icon: const Icon(Icons.arrow_downward),
                 iconSize: 24,
@@ -104,6 +105,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                 ),
                 onChanged: (String? newValue) {
                   setState(() {
+                    print('we inside');
                     dropdownValue = newValue!;
                     if (dropdownValue == defaultDropDownValue) {
                       _formIsVisible = false;
@@ -143,6 +145,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
     return Form(
         key: _formKey,
         child: ListView(
+            key: Key('ListViewFormPersonalInfo'),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
             children: <Widget>[
               ElevatedButton(

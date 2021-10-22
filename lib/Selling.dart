@@ -25,7 +25,6 @@ class _SellingState extends State<Selling> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          ElevatedButton(onPressed: () {}, child: Text('Go live')),
           ElevatedButton(
             onPressed: () {
               Navigator.push(

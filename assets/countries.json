@@ -1,5 +1,5 @@
 {
-    "names": [ "Select Country",
+    "names": ["Select Country",
     "Afghanistan", 
     "Åland Islands", 
     "Albania", 
@@ -244,6 +244,5 @@
     "Western Sahara", 
     "Yemen", 
     "Zambia", 
-    "Zimbabwe"
-    ]
+    "Zimbabwe"]
 }
