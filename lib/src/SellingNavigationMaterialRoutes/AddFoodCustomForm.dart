@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:freegapp/src/ApplicationStateFirebase.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
@@ -85,6 +86,10 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
       ),
       TextField(
         keyboardType: TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: [
+          FilteringTextInputFormatter.deny('-'),
+          FilteringTextInputFormatter.deny(',')
+        ],
         key: Key('costAddFoodCustomForm'),
         controller: costController,
         decoration: InputDecoration(

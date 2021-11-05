@@ -37,14 +37,16 @@ void main() {
     expect(find.byKey(Key('ListViewFormPersonalInfo')), findsNothing);
     await tester.tap(find.byIcon(Icons.arrow_downward), warnIfMissed: false);
     // await tester.tap(find.byIcon(Icons.arrow_downward), warnIfMissed: false);
-    await tester.pump();
-    await tester.pump(Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    // await tester.pump();
+    // await tester.pump(Duration(seconds: 1));
     // after opening the menu we have two widgets with text 'Afghanistan'
     // one in index stack of the dropdown button and one in the menu .
     // apparently the last one is from the menu.
     await tester.tap(find.text('Afghanistan').last, warnIfMissed: false);
-    await tester.pump();
-    await tester.pump(Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    // await tester.pump();
+    // await tester.pump(Duration(seconds: 1));
     expect(
         (tester.widget(find.byKey(Key('DropdownButtonPersonalInfo')))
                 as DropdownButton)
