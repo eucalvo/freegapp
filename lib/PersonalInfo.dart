@@ -208,6 +208,9 @@ class _PersonalInfoState extends State<PersonalInfo> {
                   Expanded(
                       child: TextFormField(
                     key: Key('LatitudeTextFormFieldPersonalInfo'),
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [FilteringTextInputFormatter.deny(',')],
                     controller: latitudeController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
@@ -223,6 +226,9 @@ class _PersonalInfoState extends State<PersonalInfo> {
                   Expanded(
                       child: TextFormField(
                     key: Key('LongitudeTextFormFieldPersonalInfo'),
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [FilteringTextInputFormatter.deny(',')],
                     controller: longitudeController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),

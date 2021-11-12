@@ -1,8 +1,18 @@
+import 'package:freegapp/src/Food.dart';
+import 'package:freegapp/src/coordinateInfo.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 
 class TheMap extends StatefulWidget {
-  TheMap({Key? key}) : super(key: key); // Initializes key for subclasses.
+  TheMap(
+      {Key? key,
+      required this.coordinateInfoList,
+      required this.foodList,
+      required this.userIdSellingFood})
+      : super(key: key); // Initializes key for subclasses.
+  final List<CoordinateInfo> coordinateInfoList;
+  final List<Food> foodList;
+  final Set<String> userIdSellingFood;
   @override
   _MapState createState() => _MapState();
 }
@@ -13,6 +23,20 @@ class _MapState extends State<TheMap> {
 
   final LatLng _center = const LatLng(45.521563, -122.677433);
 
+  Set<Marker> getMarkerOfPeopleSelling() {
+    // CoordinateInfo? coordinateElement;
+    var peopleSellingFood = <Marker>{};
+    widget.userIdSellingFood.forEach((userIdString) {
+      var coordinateInfoOfUserId = widget.coordinateInfoList
+          .firstWhere((element) => element.userId == userIdString);
+      peopleSellingFood.add(Marker(
+          markerId: MarkerId(coordinateInfoOfUserId.userId),
+          position: LatLng(coordinateInfoOfUserId.latitude,
+              coordinateInfoOfUserId.longitude)));
+    });
+    return peopleSellingFood;
+  }
+
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
@@ -20,6 +44,7 @@ class _MapState extends State<TheMap> {
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
+      markers: getMarkerOfPeopleSelling(),
       onMapCreated: _onMapCreated,
       initialCameraPosition: CameraPosition(
         target: _center,

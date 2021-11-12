@@ -67,7 +67,14 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   int _selectedIndex = 0;
   // Widget array for bottom navigation bar
   static final List<Widget> _widgetOptions = <Widget>[
-    TheMap(key: Key('TheMap')),
+    Consumer<ApplicationStateFirebase>(
+      builder: (context, appState, _) => TheMap(
+        key: Key('TheMap'),
+        coordinateInfoList: appState.coordinateInfoList,
+        foodList: appState.foodMapList,
+        userIdSellingFood: appState.userIdSellingFood,
+      ),
+    ),
     Consumer<ApplicationStateFirebase>(
       builder: (context, appState, _) => LoginFlow(
           email: appState.email,

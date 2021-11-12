@@ -6,6 +6,7 @@ import 'package:freegapp/src/Food.dart';
 import 'package:freegapp/src/MyUserInfo.dart';
 import 'dart:async'; // new
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freegapp/src/coordinateInfo.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
 
 class ApplicationStateFirebase extends ChangeNotifier {
@@ -16,13 +17,53 @@ class ApplicationStateFirebase extends ChangeNotifier {
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
       _usersSubscription;
   List<Food> _foods = [];
+  List<Food> _foodsMap = [];
+  List<String> _userIdSellingFood = [];
+  List<CoordinateInfo> _coordinateInfo = [];
   MyUserInfo _myUserInfo = MyUserInfo();
+  Set<String> get userIdSellingFood => _userIdSellingFood.toSet();
   List<Food> get foodList => _foods;
+  List<Food> get foodMapList => _foodsMap;
+  List<CoordinateInfo> get coordinateInfoList => _coordinateInfo;
   MyUserInfo get myUserInfo => _myUserInfo;
 
   Future<void> init() async {
     await Firebase.initializeApp();
+
     FirebaseAuth.instance.userChanges().listen((user) {
+      getCoordinatesForMap();
+      FirebaseFirestore.instance
+          .collection('food')
+          .orderBy('timestamp', descending: true)
+          .snapshots()
+          .listen((snapshot) {
+        _userIdSellingFood = [];
+        snapshot.docs.forEach((document) {
+          _userIdSellingFood.add(document.data()['userId']);
+        });
+        notifyListeners();
+      });
+      FirebaseFirestore.instance
+          .collection('food')
+          .orderBy('timestamp', descending: true)
+          .snapshots()
+          .listen((snapshot) {
+        _foodsMap = [];
+        snapshot.docs.forEach((document) {
+          _foodsMap.add(
+            Food(
+              documentID: document.id,
+              title: document.data()['title'],
+              description: document.data()['description'],
+              cost: document.data()['cost'].toDouble(),
+              image1: document.data()['image1'],
+              image2: document.data()['image2'] ?? '',
+              image3: document.data()['image3'] ?? '',
+            ),
+          );
+        });
+        notifyListeners();
+      });
       if (user != null) {
         _loginState = ApplicationLoginState.loggedIn;
         _usersSubscription = FirebaseFirestore.instance
@@ -192,5 +233,25 @@ class ApplicationStateFirebase extends ChangeNotifier {
 
   void seeYouSpaceCowboy(id) {
     FirebaseFirestore.instance.collection('food').doc(id).delete();
+  }
+
+  void getCoordinatesForMap() {
+    FirebaseFirestore.instance
+        .collection('users')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .listen((snapshot) {
+      _coordinateInfo = [];
+      snapshot.docs.forEach((document) {
+        _coordinateInfo.add(
+          CoordinateInfo(
+            userId: document.id,
+            latitude: document.data()['latitude'].toDouble(),
+            longitude: document.data()['longitude'].toDouble(),
+          ),
+        );
+      });
+      notifyListeners();
+    });
   }
 }
