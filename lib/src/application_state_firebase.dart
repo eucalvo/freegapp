@@ -6,7 +6,7 @@ import 'package:freegapp/src/food.dart';
 import 'package:freegapp/src/my_user_info.dart';
 import 'dart:async'; // new
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:freegapp/src/coordinateInfo.dart';
+import 'package:freegapp/src/coordinate_info.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
 
 class ApplicationStateFirebase extends ChangeNotifier {
