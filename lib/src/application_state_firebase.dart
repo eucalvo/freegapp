@@ -1,9 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:freegapp/LoginFlow.dart';
-import 'package:freegapp/src/Food.dart';
-import 'package:freegapp/src/MyUserInfo.dart';
+import 'package:freegapp/login_flow.dart';
+import 'package:freegapp/src/food.dart';
+import 'package:freegapp/src/my_user_info.dart';
 import 'dart:async'; // new
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freegapp/src/coordinateInfo.dart';

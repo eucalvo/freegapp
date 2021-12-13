@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:freegapp/PersonalInfo.dart';
-import 'package:freegapp/src/LoginFlowForms/EmailFormLogin.dart';
-import 'package:freegapp/src/LoginFlowForms/PasswordFormLogin.dart';
-import 'package:freegapp/Selling.dart';
-import 'package:freegapp/src/LoginFlowForms/RegisterFormLogin.dart';
-import 'package:freegapp/src/MyUserInfo.dart';
+import 'package:freegapp/personal_info.dart';
+import 'package:freegapp/src/LoginFlowForms/email_form_login.dart';
+import 'package:freegapp/src/LoginFlowForms/password_form_login.dart';
+import 'package:freegapp/selling.dart';
+import 'package:freegapp/src/LoginFlowForms/register_form_login.dart';
+import 'package:freegapp/src/my_user_info.dart';
 import 'dart:io';
 
 enum ApplicationLoginState {

@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
+import 'package:freegapp/src/mocks/application_state_firebase_mock.dart';
 
-import 'package:freegapp/LoginFlow.dart';
+import 'package:freegapp/login_flow.dart';
 
 void main() {
 // TextField widgets require a Material widget ancestor.

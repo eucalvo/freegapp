@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:provider/provider.dart';
-import 'package:freegapp/TheMap.dart';
-import 'package:freegapp/src/ApplicationStateFirebase.dart';
-import 'package:freegapp/LoginFlow.dart';
+import 'package:freegapp/the_map.dart';
+import 'package:freegapp/src/application_state_firebase.dart';
+import 'package:freegapp/login_flow.dart';
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';

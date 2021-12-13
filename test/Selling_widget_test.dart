@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
+import 'package:freegapp/src/mocks/application_state_firebase_mock.dart';
 import 'package:provider/provider.dart';
-import 'package:freegapp/Selling.dart';
+import 'package:freegapp/selling.dart';
 import 'package:flutter/foundation.dart';
 
 void main() {

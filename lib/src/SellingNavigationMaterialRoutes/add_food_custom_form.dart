@@ -4,13 +4,13 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:freegapp/src/ApplicationStateFirebase.dart';
+import 'package:freegapp/src/application_state_firebase.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
-import 'package:freegapp/src/mocks/ImagePickerMock.dart';
+import 'package:freegapp/src/mocks/application_state_firebase_mock.dart';
+import 'package:freegapp/src/mocks/image_picker_mock.dart';
 
 class AddFoodCustomForm extends StatefulWidget {
   AddFoodCustomForm({Key? key})

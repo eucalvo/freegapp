@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:freegapp/Selling.dart';
-import 'package:freegapp/src/MyUserInfo.dart';
+import 'package:freegapp/selling.dart';
+import 'package:freegapp/src/my_user_info.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:freegapp/src/mocks/ImagePickerMock.dart';
+import 'package:freegapp/src/mocks/image_picker_mock.dart';
 import 'dart:io';
-import 'package:freegapp/src/ApplicationStateFirebase.dart';
-import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
+import 'package:freegapp/src/application_state_firebase.dart';
+import 'package:freegapp/src/mocks/application_state_firebase_mock.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';

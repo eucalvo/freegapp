@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:freegapp/PersonalInfo.dart';
+import 'package:freegapp/personal_info.dart';
 import 'dart:io';
-import 'package:freegapp/src/ApplicationStateFirebase.dart';
-import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
-import 'package:freegapp/src/Food.dart';
+import 'package:freegapp/src/application_state_firebase.dart';
+import 'package:freegapp/src/mocks/application_state_firebase_mock.dart';
+import 'package:freegapp/src/food.dart';
 import 'dart:convert';
-import 'package:freegapp/src/SellingNavigationMaterialRoutes/AddFoodCustomForm.dart';
+import 'package:freegapp/src/SellingNavigationMaterialRoutes/add_food_custom_form.dart';
 import 'package:provider/provider.dart';
 
 class Selling extends StatefulWidget {

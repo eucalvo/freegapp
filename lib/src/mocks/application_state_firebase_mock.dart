@@ -3,11 +3,11 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:firebase_auth_platform_interface/firebase_auth_platform_interface.dart';
 // ignore: implementation_imports
 import 'package:firebase_auth_mocks/src/mock_user_credential.dart';
-import 'package:freegapp/LoginFlow.dart';
-import 'package:freegapp/src/Food.dart';
+import 'package:freegapp/login_flow.dart';
+import 'package:freegapp/src/food.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'dart:async';
-import 'package:freegapp/src/MyUserInfo.dart';
+import 'package:freegapp/src/my_user_info.dart';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
