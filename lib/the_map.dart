@@ -1,5 +1,5 @@
 import 'package:freegapp/src/food.dart';
-import 'package:freegapp/src/coordinateInfo.dart';
+import 'package:freegapp/src/coordinate_info.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
