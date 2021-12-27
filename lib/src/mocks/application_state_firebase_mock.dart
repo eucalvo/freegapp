@@ -95,6 +95,7 @@ class ApplicationStateFirebaseMock extends ChangeNotifier {
         snapshot.docs.forEach((document) {
           _foods.add(
             Food(
+              userId: document.data()['userId'],
               documentID: '$i',
               title: document.data()['title'],
               description: document.data()['description'],

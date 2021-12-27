@@ -169,33 +169,36 @@ class _FoodWidgetState extends State<FoodWidget> {
                   fit: BoxFit.cover,
                 ),
               ),
-              Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title),
-                      Padding(
-                          padding: const EdgeInsets.only(top: 2.0, bottom: 2.0),
-                          child: Text(
-                            description,
-                            overflow: TextOverflow.ellipsis,
+              SizedBox(
+                  width: 250,
+                  child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(title),
+                          Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 2.0, bottom: 2.0),
+                              child: Text(
+                                description,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 12.0,
+                                  color: Colors.black54,
+                                ),
+                                maxLines: 1,
+                              )),
+                          Text(
+                            '$cost',
                             style: TextStyle(
                               fontSize: 12.0,
                               color: Colors.black54,
                             ),
                             maxLines: 1,
-                          )),
-                      Text(
-                        '$cost',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          color: Colors.black54,
-                        ),
-                        maxLines: 1,
-                      )
-                    ],
-                  ))
+                          )
+                        ],
+                      ))),
             ],
           ),
         ),

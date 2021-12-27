@@ -1,3 +1,4 @@
+import 'package:freegapp/my_catalog.dart';
 import 'package:freegapp/src/food.dart';
 import 'package:freegapp/src/coordinate_info.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -30,12 +31,21 @@ class _MapState extends State<TheMap> {
     widget.userIdSellingFood.forEach((userIdString) {
       var coordinateInfoOfUserId = widget.coordinateInfoList
           .firstWhere((element) => element.userId == userIdString);
+      var foodBeingSoldByUserId = widget.foodList
+          .where((element) => element.userId == userIdString)
+          .toList();
       peopleSellingFood.add(Marker(
           infoWindow: InfoWindow(onTap: () {}),
           markerId: MarkerId(coordinateInfoOfUserId.userId),
           position: LatLng(coordinateInfoOfUserId.latitude,
               coordinateInfoOfUserId.longitude),
-          onTap: () {}));
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MyCatalog(
+                  foodBeingSoldByUserId: foodBeingSoldByUserId,
+                ),
+              ))));
     });
     return peopleSellingFood;
   }
