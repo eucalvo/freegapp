@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
+import 'package:freegapp/cart_model.dart';
 import 'package:provider/provider.dart';
 import 'package:freegapp/the_map.dart';
 import 'package:freegapp/src/application_state_firebase.dart';
@@ -33,12 +34,14 @@ void main() async {
     version: 1,
   );
 
-  runApp(
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(
+      create: (context) => CartModel(),
+    ),
     ChangeNotifierProvider(
       create: (context) => ApplicationStateFirebase(),
-      builder: (context, _) => MyApp(),
     ),
-  );
+  ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

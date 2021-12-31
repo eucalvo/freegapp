@@ -1,20 +1,21 @@
 import 'package:flutter/foundation.dart';
+import 'package:freegapp/catalog_model.dart';
 import 'package:freegapp/src/food.dart';
 
 class CartModel extends ChangeNotifier {
   /// The private field backing [catalog].
-  late Food _catalog;
+  late CatalogModel _catalog;
 
   /// Internal, private state of the cart. Stores the ids of each item.
   final List<int> _itemIds = [];
-  final List<Food> _foods = [];
+  List<Food> _foods = [];
 
   List<Food> get foodList => _foods;
 
   /// The current catalog. Used to construct items from numeric ids.
-  Food get catalog => _catalog;
+  CatalogModel get catalog => _catalog;
 
-  set catalog(Food newCatalog) {
+  set catalog(CatalogModel newCatalog) {
     _catalog = newCatalog;
     // Notify listeners, in case the new catalog provides information
     // different from the previous one. For example, availability of an item
@@ -30,13 +31,12 @@ class CartModel extends ChangeNotifier {
   //     items.fold(0, (total, current) => total + current.price);
 
   /// Adds [item] to cart. This is the only way to modify the cart from outside.
-  void add(Food item) {
+  void add(List<Food> items) {
     // if (item.amount == 0) {
     //   _foods.removeWhere((element) => item.amount == 0);
     // }
-    if (item.amount != 0) {
-      _foods.add(item);
-    }
+    _foods = items;
+
     // This line tells [Model] that it should rebuild the widgets that
     // depend on it.
     notifyListeners();

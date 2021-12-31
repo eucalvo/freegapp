@@ -15,16 +15,17 @@ class _CartState extends State<Cart> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(),
         body: Column(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: CartList(),
-          ),
-        ),
-      ],
-    ));
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: CartList(),
+              ),
+            ),
+          ],
+        ));
   }
 }
 
@@ -46,7 +47,7 @@ class _CartListState extends State<CartList> {
     return ListView.builder(
         itemCount: cart.foodList.length,
         itemBuilder: (context, index) {
-          var numOfItems = 1;
+          var numOfItems = cart.foodList[index].amount!;
           return Row(
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,12 +63,13 @@ class _CartListState extends State<CartList> {
                   fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(
-                width: 250,
+              Expanded(
+                  child: SizedBox(
                 child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(children: [
-                      Column(
+                      Expanded(
+                          child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(cart.foodList[index].title),
@@ -92,34 +94,30 @@ class _CartListState extends State<CartList> {
                             maxLines: 1,
                           )
                         ],
-                      ),
-                      OutlinedButton(
-                        child: Icon(Icons.remove),
-                        onPressed: () {
-                          if (numOfItems > 1) {
-                            setState(() {
-                              numOfItems--;
-                            });
-                          }
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20 / 2),
-                        child: Text(
-                          // if our item is less  then 10 then  it shows 01 02 like that
-                          numOfItems.toString().padLeft(2, '0'),
-                          style: Theme.of(context).textTheme.headline6,
+                      )),
+                      Row(children: [
+                        IconButton(
+                          onPressed: () {
+                            if (numOfItems > 1) {
+                              setState(() {
+                                numOfItems--;
+                              });
+                            }
+                          },
+                          icon: Icon(Icons.remove_circle),
                         ),
-                      ),
-                      OutlinedButton(
-                          child: Icon(Icons.add),
+                        Text('$numOfItems'),
+                        IconButton(
                           onPressed: () {
                             setState(() {
                               numOfItems++;
                             });
-                          }),
+                          },
+                          icon: Icon(Icons.add_circle),
+                        ),
+                      ]),
                     ])),
-              )
+              ))
             ],
           );
         });
