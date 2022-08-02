@@ -347,7 +347,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
       // }
       // await profilePicTemporaryFile.create(recursive: true);
       var imageInBytes = base64Decode(myProfilePic);
-      imageCache?.clear();
+      imageCache.clear();
       await File(profilePicTemporaryFile.path).writeAsBytes(imageInBytes);
       var tempList = [XFile(profilePicTemporaryFile.path)];
       _imageFileList = tempList;
