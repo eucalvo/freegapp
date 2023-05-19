@@ -41,8 +41,8 @@ dependencies:
   provider: ^6.0.5
   firebase_auth_mocks: ^0.11.0
   firebase_auth_platform_interface: ^6.15.1
-  google_sign_in: ^6.1.0
-  google_sign_in_mocks: ^0.2.2
+  google_sign_in: ^5.0.2
+  google_sign_in_mocks: ^0.2.1
   camera: ^0.10.5
   path_provider: ^2.0.15
   path: ^1.8.3
