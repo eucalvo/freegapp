@@ -12,8 +12,6 @@ import 'package:freegapp/LoginFlow.dart';
 
 // import 'dart:io';
 
-import 'package:flutter/foundation.dart';
-
 void main() {
   testWidgets('adding an item to Selling widget', (WidgetTester tester) async {
     await tester.pumpWidget(ChangeNotifierProvider(

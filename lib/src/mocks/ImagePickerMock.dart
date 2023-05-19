@@ -1,10 +1,8 @@
-import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
-import 'package:flutter/src/services/asset_bundle.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
@@ -138,8 +136,11 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
     }
 
-    _channel.setMockMethodCallHandler(
-        (methodCall) async => Future.delayed(const Duration(), () => pathList));
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+            _channel,
+            (methodCall) async =>
+                Future.delayed(const Duration(), () => pathList));
 
     return _channel.invokeMethod<List<dynamic>?>(
       'pickMultiImage',
@@ -300,8 +301,11 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   @override
   Future<LostDataResponse> getLostData() async {
     List<XFile>? pickedFileList;
-    _channel.setMockMethodCallHandler((methodCall) async =>
-        Future.delayed(const Duration(), () => mockPickedImagesXfile));
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+            _channel,
+            (methodCall) async =>
+                Future.delayed(const Duration(), () => mockPickedImagesXfile));
 
     var result = await _channel.invokeMapMethod<String, dynamic>('retrieve');
 
