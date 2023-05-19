@@ -7,7 +7,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:freegapp/src/ApplicationStateFirebase.dart';
+import 'package:freegapp/src/application_state_firebase.dart';
 
 import 'package:freegapp/main.dart';
 

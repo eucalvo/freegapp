@@ -53,6 +53,11 @@ dependencies:
   firebase_storage: ^11.2.1
   fake_cloud_firestore: ^2.4.1+1
   image_picker_platform_interface: ^2.6.3
+  geolocator: ^7.6.0
+  geocoding: ^2.0.1
+  fluttertoast: ^8.0.8
+  country_picker: ^2.0.8
+  dio: ^4.0.1
 
 dev_dependencies:
   flutter_test:
@@ -83,6 +88,7 @@ flutter:
     - assets/imagesTesting/theImage1.txt
     - assets/imagesTesting/theImage2.txt
     - assets/imagesTesting/theImage3.txt
+    - assets/countries.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

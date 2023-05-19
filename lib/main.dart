@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
+import 'package:freegapp/cart_model.dart';
 import 'package:provider/provider.dart';
-import 'package:freegapp/TheMap.dart';
-import 'package:freegapp/src/ApplicationStateFirebase.dart';
-import 'package:freegapp/LoginFlow.dart';
+import 'package:freegapp/the_map.dart';
+import 'package:freegapp/src/application_state_firebase.dart';
+import 'package:freegapp/login_flow.dart';
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -33,12 +34,14 @@ void main() async {
     version: 1,
   );
 
-  runApp(
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(
+      create: (context) => CartModel(),
+    ),
     ChangeNotifierProvider(
       create: (context) => ApplicationStateFirebase(),
-      builder: (context, _) => MyApp(),
     ),
-  );
+  ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -67,7 +70,14 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   int _selectedIndex = 0;
   // Widget array for bottom navigation bar
   static final List<Widget> _widgetOptions = <Widget>[
-    TheMap(key: Key('TheMap')),
+    Consumer<ApplicationStateFirebase>(
+      builder: (context, appState, _) => TheMap(
+        key: Key('TheMap'),
+        coordinateInfoList: appState.coordinateInfoList,
+        foodList: appState.foodMapList,
+        userIdSellingFood: appState.userIdSellingFood,
+      ),
+    ),
     Consumer<ApplicationStateFirebase>(
       builder: (context, appState, _) => LoginFlow(
           email: appState.email,
@@ -78,6 +88,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           cancelRegistration: appState.cancelRegistration,
           registerAccount: appState.registerAccount,
           signOut: appState.signOut,
+          myUserInfo: appState.myUserInfo,
           key: Key('LoginFlow')),
     ),
   ];

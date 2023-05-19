@@ -1,10 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// ignore: implementation_imports
-import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
+import 'package:freegapp/src/mocks/application_state_firebase_mock.dart';
 
-import 'package:freegapp/LoginFlow.dart';
+import 'package:freegapp/login_flow.dart';
 
 void main() {
 // TextField widgets require a Material widget ancestor.
@@ -30,6 +29,7 @@ void main() {
                     cancelRegistration: appState.cancelRegistration,
                     registerAccount: appState.registerAccount,
                     signOut: appState.signOut,
+                    myUserInfo: appState.myUserInfo,
                     key: Key('LoginFlow'))))));
     expect(find.byKey(Key('EmailFormLogin')), findsOneWidget);
     // Enter 'bob@thebuilder.com' into the TextField.
@@ -55,6 +55,9 @@ void main() {
     await tester.tap(find.text('SIGN IN'));
     await tester.pump();
     expect(find.byKey(Key('Selling')), findsOneWidget);
+    await tester.tap(find.text('Logout'));
+    await tester.pump();
+    expect(find.byKey(Key('EmailFormLogin')), findsOneWidget);
   });
   testWidgets('Go to register page', (WidgetTester tester) async {
     await tester.pumpWidget(ChangeNotifierProvider(
@@ -71,6 +74,7 @@ void main() {
                     cancelRegistration: appState.cancelRegistration,
                     registerAccount: appState.registerAccount,
                     signOut: appState.signOut,
+                    myUserInfo: appState.myUserInfo,
                     key: Key('LoginFlow'))))));
     expect(find.byKey(Key('EmailFormLogin')), findsOneWidget);
     // Enter 'dom@thebuilder.com' into the TextField.
@@ -90,6 +94,6 @@ void main() {
         find.byKey(Key('PasswordRegisterFormLogin')), 'T3STU1D');
     await tester.tap(find.byType(ElevatedButton));
     await tester.pump();
-    expect(find.byKey(Key('Selling')), findsOneWidget);
+    expect(find.byKey(Key('PersonalInfo')), findsOneWidget);
   });
 }

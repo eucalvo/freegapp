@@ -3,12 +3,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:freegapp/src/ApplicationStateFirebase.dart';
+import 'package:flutter/services.dart';
+import 'package:freegapp/src/application_state_firebase.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
 import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
 import 'package:freegapp/src/mocks/ImagePickerMock.dart';
+import 'package:freegapp/src/mocks/application_state_firebase_mock.dart';
+import 'package:freegapp/src/mocks/image_picker_mock.dart';
 
 class AddFoodCustomForm extends StatefulWidget {
   AddFoodCustomForm({Key? key})
@@ -33,7 +36,6 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
   final descriptionController = TextEditingController();
   final costController = TextEditingController();
   var uuid = Uuid();
-  var images;
   final imageHeight = 100.0;
   var validate = false;
 
@@ -85,6 +87,10 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
       ),
       TextField(
         keyboardType: TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: [
+          FilteringTextInputFormatter.deny('-'),
+          FilteringTextInputFormatter.deny(',')
+        ],
         key: Key('costAddFoodCustomForm'),
         controller: costController,
         decoration: InputDecoration(
@@ -101,7 +107,6 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
       FloatingActionButton(
         onPressed: () async {
           try {
-            images = await readImagesToBase64(_imageFileList);
             if (titleController.text.isEmpty ||
                 descriptionController.text.isEmpty ||
                 costController.text.isEmpty) {
@@ -109,8 +114,11 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
                 validate = true;
               });
             } else {
-              await writeToFirebase(titleController.text,
-                  descriptionController.text, costController.text, images);
+              await writeToFirebase(
+                  titleController.text,
+                  descriptionController.text,
+                  costController.text,
+                  await readImagesToBase64(_imageFileList));
               Navigator.pop(context);
             }
           } on Exception catch (e) {
@@ -215,21 +223,19 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
     };
   }
 
-  Future<void> writeToFirebase(
-      String title, String description, String cost, List<String> image) async {
+  Future<void> writeToFirebase(String title, String description, String cost,
+      List<String> images) async {
     var id = uuid.v4();
-    var mockAppState = ApplicationStateFirebaseMock();
-    var appState = ApplicationStateFirebase();
     if (Platform.environment.containsKey('FLUTTER_TEST') == true) {
-      await mockAppState.addDocumentToFood(
+      await ApplicationStateFirebaseMock().addDocumentToFood(
           id, title, description, double.parse(cost), images);
     } else {
-      await appState.addDocumentToFood(
+      await ApplicationStateFirebase().addDocumentToFood(
           id, title, description, double.parse(cost), images);
     }
   }
 
-  Future<List<dynamic>> readImagesToBase64(List<XFile>? imageFiles) async {
+  Future<List<String>> readImagesToBase64(List<XFile>? imageFiles) async {
     var imageToBytes = List<Uint8List>.filled(3, Uint8List(0), growable: false);
     if (imageFiles == null) {
       throw FormatException('Pick at least 1 image');

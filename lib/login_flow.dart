@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:freegapp/src/LoginFlowForms/EmailFormLogin.dart';
-import 'package:freegapp/src/LoginFlowForms/PasswordFormLogin.dart';
-import 'package:freegapp/Selling.dart';
-import 'package:freegapp/src/LoginFlowForms/RegisterFormLogin.dart';
+import 'package:freegapp/personal_info.dart';
+import 'package:freegapp/src/LoginFlowForms/email_form_login.dart';
+import 'package:freegapp/src/LoginFlowForms/password_form_login.dart';
+import 'package:freegapp/selling.dart';
+import 'package:freegapp/src/LoginFlowForms/register_form_login.dart';
+import 'package:freegapp/src/my_user_info.dart';
+import 'dart:io';
 
 enum ApplicationLoginState {
   loggedOut,
@@ -22,6 +25,7 @@ class LoginFlow extends StatelessWidget {
     required this.cancelRegistration,
     required this.registerAccount,
     required this.signOut,
+    required this.myUserInfo,
     Key? key,
   }) : super(key: key);
 
@@ -46,6 +50,7 @@ class LoginFlow extends StatelessWidget {
     void Function(Exception e) error,
   ) registerAccount;
   final void Function() signOut;
+  final MyUserInfo myUserInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -85,12 +90,41 @@ class LoginFlow extends StatelessWidget {
           },
         );
       case ApplicationLoginState.loggedIn:
-        return Selling(
-          logout: () {
-            signOut();
-          },
-          key: Key('Selling'),
-        );
+        if (Platform.environment.containsKey('FLUTTER_TEST') == true) {
+          if (myUserInfo.userId == null) {
+            return PersonalInfo(
+              key: Key('PersonalInfo'),
+              logout: () {
+                signOut();
+              },
+              myUserInfo: myUserInfo,
+            );
+          } else {
+            return Selling(
+              logout: () {
+                signOut();
+              },
+              key: Key('Selling'),
+            );
+          }
+        } else {
+          if (myUserInfo.userId == null) {
+            return PersonalInfo(
+              key: Key('PersonalInfo'),
+              logout: () {
+                signOut();
+              },
+              myUserInfo: myUserInfo,
+            );
+          } else {
+            return Selling(
+              logout: () {
+                signOut();
+              },
+              key: Key('Selling'),
+            );
+          }
+        }
       default:
         return Row(
           children: const [
