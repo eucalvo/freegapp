@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:freegapp/src/mocks/application_state_firebase_mock.dart';
 import 'package:provider/provider.dart';
 // ignore: implementation_imports
-import 'package:freegapp/LoginFlow.dart';
 
 // import 'dart:io';
 import 'package:freegapp/selling.dart';

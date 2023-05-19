@@ -8,8 +8,6 @@ import 'package:freegapp/src/application_state_firebase.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
-import 'package:freegapp/src/mocks/ApplicationStateFirebaseMock.dart';
-import 'package:freegapp/src/mocks/ImagePickerMock.dart';
 import 'package:freegapp/src/mocks/application_state_firebase_mock.dart';
 import 'package:freegapp/src/mocks/image_picker_mock.dart';
 
