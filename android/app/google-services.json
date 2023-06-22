@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "915211159453",
+    "firebase_url": "https://freegapp-8f47a-default-rtdb.firebaseio.com",
+    "project_id": "freegapp-8f47a",
+    "storage_bucket": "freegapp-8f47a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:915211159453:android:ec93f147bd1a2a82199174",
+        "android_client_info": {
+          "package_name": "com.example.freegapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "915211159453-ul1ro6qr9v7i1fg7sv1tqsccntb2i1sn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxAKmJPFnVKnTGfggjDqZn__v2PTX18Ns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "915211159453-ul1ro6qr9v7i1fg7sv1tqsccntb2i1sn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "915211159453-4sqtv789tltjeehd264nmgdediuudrf4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.freegapp.freegapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:915211159453:android:cc464f5f4367e545199174",
+        "android_client_info": {
+          "package_name": "com.freegapp.freegapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "915211159453-ul1ro6qr9v7i1fg7sv1tqsccntb2i1sn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxAKmJPFnVKnTGfggjDqZn__v2PTX18Ns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "915211159453-ul1ro6qr9v7i1fg7sv1tqsccntb2i1sn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "915211159453-4sqtv789tltjeehd264nmgdediuudrf4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.freegapp.freegapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

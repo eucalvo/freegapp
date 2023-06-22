@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>915211159453-i9tnapihofleodija3l5sl9bind42ujv.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.915211159453-i9tnapihofleodija3l5sl9bind42ujv</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCtPgkKJxmLM3YCZhGQgFzM6wUO5Y9kYFs</string>
+	<key>GCM_SENDER_ID</key>
+	<string>915211159453</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.freegapp.RunnerTests</string>
+	<key>PROJECT_ID</key>
+	<string>freegapp-8f47a</string>
+	<key>STORAGE_BUCKET</key>
+	<string>freegapp-8f47a.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:915211159453:ios:fc397c1c96238fa2199174</string>
+	<key>DATABASE_URL</key>
+	<string>https://freegapp-8f47a-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>
