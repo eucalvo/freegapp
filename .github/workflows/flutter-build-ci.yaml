@@ -1,5 +1,5 @@
 # This is the name of the workflow, visible on GitHub UI
-name: build CI
+name: Flutter build CI
 
 # Trigger the workflow on push or pull request
 on: [push, pull_request]
@@ -8,7 +8,7 @@ on: [push, pull_request]
 jobs:
 
     android:
-        name: flutter on Android
+        name: Android
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
