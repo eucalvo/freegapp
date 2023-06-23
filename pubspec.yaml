@@ -48,7 +48,6 @@ dependencies:
   fake_cloud_firestore: ^2.4.1+1
   firebase_auth_platform_interface: ^6.15.3
   image_picker_platform_interface: ^2.8.0
-  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -74,7 +73,6 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-#    - .env
     - assets/imagesTesting/cow1.jpg
     - assets/imagesTesting/cow2.jpg
     - assets/imagesTesting/cow3.jpg

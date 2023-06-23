@@ -36,7 +36,7 @@ jobs:
             - name: flutter build appbundle
               run: flutter build appbundle
 
-    ios:
+    iOS:
         runs-on: macos-latest
         steps:
             - uses: actions/checkout@v3
