@@ -6,6 +6,14 @@ if (localPropertiesFile.exists()) {
     }
 }
 
+def envProperties = new Properties()
+def envPropertiesFile = rootProject.file('../.env')
+if (envPropertiesFile.exists()) {
+    envPropertiesFile.withReader('UTF-8') { reader ->
+        envProperties.load(reader)
+    }
+}
+
 def flutterRoot = localProperties.getProperty('flutter.sdk')
 if (flutterRoot == null) {
     throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
@@ -53,7 +61,7 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
-        resValue "string", "google_maps_api_key", "$System.env.GOOGLE_MAPS_API_KEY_ANDROID"
+        resValue "string", "google_maps_api_key", envProperties['GOOGLE_MAPS_API_KEY_ANDROID']
     }
 
     buildTypes {
