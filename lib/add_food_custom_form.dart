@@ -35,7 +35,7 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
   var uuid = const Uuid();
   dynamic images;
   final imageHeight = 100.0;
-  var validate = false;
+  var valid = true;
 
   @override
   void dispose() {
@@ -73,7 +73,7 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
         decoration: InputDecoration(
             border: const OutlineInputBorder(),
             hintText: 'title',
-            errorText: validate ? 'Value Can\'t Be Empty' : null),
+            errorText: !valid ? 'Value Can\'t Be Empty' : null),
       ),
       TextField(
         key: const Key('descriptionAddFoodCustomForm'),
@@ -81,7 +81,7 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
         decoration: InputDecoration(
             border: const OutlineInputBorder(),
             hintText: 'description',
-            errorText: validate ? 'Value Can\'t Be Empty' : null),
+            errorText: !valid ? 'Value Can\'t Be Empty' : null),
       ),
       TextField(
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -90,7 +90,7 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
         decoration: InputDecoration(
             border: const OutlineInputBorder(),
             hintText: 'cost',
-            errorText: validate ? 'Value Can\'t Be Empty' : null),
+            errorText: !valid ? 'Value Can\'t Be Empty' : null),
       ),
       TextButton(
         onPressed: () {
@@ -99,34 +99,34 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
         child: const Text('CANCEL'),
       ),
       FloatingActionButton(
-        onPressed: () => {
-          _uploadPickedImages(context, () {
-            if (!mounted) return;
-            Navigator.of(context).pop();
-          })
+        onPressed: () async {
+          try {
+            images = await readImagesToBase64(_imageFileList);
+            if (titleController.text.isEmpty ||
+                descriptionController.text.isEmpty ||
+                costController.text.isEmpty) {
+              setState(() {
+                valid = true;
+              });
+            } else {
+              final futures = [
+                writeToFirebase(titleController.text,
+                    descriptionController.text, costController.text, images),
+              ];
+
+              Future.forEach(futures, (future) {
+                future.then((_) {
+                  Navigator.pop(context);
+                });
+              });
+            }
+          } on Exception catch (e) {
+            _showErrorDialog(context, 'No Image Selected', e);
+          }
         },
         child: const Text('Upload'),
       ),
     ]));
-  }
-
-  void _uploadPickedImages(BuildContext context, VoidCallback onSuccess) async {
-    try {
-      images = await readImagesToBase64(_imageFileList);
-      if (titleController.text.isEmpty ||
-          descriptionController.text.isEmpty ||
-          costController.text.isEmpty) {
-        setState(() {
-          validate = true;
-        });
-      } else {
-        await writeToFirebase(titleController.text, descriptionController.text,
-            costController.text, images);
-        onSuccess.call();
-      }
-    } on Exception catch (e) {
-      _showErrorDialog(context, 'No Image Selected', e);
-    }
   }
 
   void _onImageButtonPressed({BuildContext? context}) async {
