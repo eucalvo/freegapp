@@ -1,19 +1,24 @@
-// import 'dart:html';
-
-// import 'package:image_picker/image_picker.dart';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:freegapp/src/mocks/application_state_firebase_mock.dart';
-// import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:provider/provider.dart';
-// ignore: implementation_imports
 import 'package:freegapp/login_flow.dart';
-
-// import 'dart:io';
+import 'package:flutter/services.dart';
 
 void main() {
   testWidgets('adding an item to Selling widget', (WidgetTester tester) async {
+    final imagePathList = [
+      'assets/imagesTesting/cow1.jpg',
+      'assets/imagesTesting/cow2.jpg',
+      'assets/imagesTesting/cow3.jpg',
+    ];
+    const MethodChannel channel =
+        MethodChannel('plugins.flutter.io/image_picker');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+            channel,
+            (methodCall) async =>
+                Future.delayed(const Duration(), () => imagePathList));
     await tester.pumpWidget(ChangeNotifierProvider(
         create: (context) => ApplicationStateFirebaseMock(),
         builder: (context, _) => MaterialApp(
@@ -42,11 +47,15 @@ void main() {
     await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('AddFoodCustomForm')), findsOneWidget);
-    await tester.enterText(find.byKey(const Key('titleAddFoodCustomForm')), 'test');
     await tester.enterText(
-        find.byKey(const Key('descriptionAddFoodCustomForm')), 'This is a test!');
-    await tester.enterText(find.byKey(const Key('costAddFoodCustomForm')), '10.69');
-    expect(find.byKey(const Key('PickImagesAddFoodCustomForm')), findsOneWidget);
+        find.byKey(const Key('titleAddFoodCustomForm')), 'test');
+    await tester.enterText(
+        find.byKey(const Key('descriptionAddFoodCustomForm')),
+        'This is a test!');
+    await tester.enterText(
+        find.byKey(const Key('costAddFoodCustomForm')), '10.69');
+    expect(
+        find.byKey(const Key('PickImagesAddFoodCustomForm')), findsOneWidget);
     await tester.tap(find.byIcon(Icons.photo_library));
     await tester.pumpAndSettle();
     // final _imageFileList = [
@@ -55,8 +64,8 @@ void main() {
     //   'assets/imagesTesting/cow3.jpg',
     // ];
     expect(
-        find.byKey(
-            const Key('SemanticsAddFoodCustomFormKeyWithListViewBuilderAsChild')),
+        find.byKey(const Key(
+            'SemanticsAddFoodCustomFormKeyWithListViewBuilderAsChild')),
         findsOneWidget);
     expect(find.byKey(const Key('ImageFile0')), findsOneWidget);
     expect(find.byKey(const Key('ImageFile1')), findsOneWidget);

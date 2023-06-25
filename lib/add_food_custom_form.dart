@@ -48,6 +48,7 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("WE GET TO  build widget of ADDFOODCUSTOMFORMSTATE ");
     return Scaffold(
         body: Column(children: [
       SafeArea(
@@ -119,8 +120,9 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
                   Navigator.pop(context);
                 });
               });
+              debugPrint("WE GET TO AFTER Future.forEach ");
             }
-          } on Exception catch (e) {
+          } on FormatException catch (e) {
             _showErrorDialog(context, 'No Image Selected', e);
           }
         },
@@ -130,6 +132,7 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
   }
 
   void _onImageButtonPressed({BuildContext? context}) async {
+    debugPrint("WE GET TO _onImageButtonPressed");
     final pickedFileList =
         Platform.environment.containsKey('FLUTTER_TEST') == true
             ? await _mockPicker.pickMultiImage()
@@ -240,6 +243,7 @@ class _AddFoodCustomFormState extends State<AddFoodCustomForm> {
   Future<List<dynamic>> readImagesToBase64(List<XFile>? imageFiles) async {
     var imageToBytes = List<Uint8List>.filled(3, Uint8List(0), growable: false);
     if (imageFiles == null) {
+      debugPrint("WE DID NOT PICK IMAGES UNFORTUNATELY ");
       throw const FormatException('Pick at least 1 image');
     }
     var temp = List.filled(imageFiles.length, null.toString(), growable: true);

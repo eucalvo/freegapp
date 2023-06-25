@@ -49,6 +49,8 @@ dependencies:
   firebase_auth_platform_interface: ^6.15.3
   image_picker_platform_interface: ^2.8.0
   dotenv: ^4.1.0
+  path_provider: ^2.0.15
+  mockito: ^5.4.2
 
 dev_dependencies:
   flutter_test:
