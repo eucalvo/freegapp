@@ -10,8 +10,11 @@ import GoogleMaps
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
 
-    let apiKey = ProcessInfo.processInfo.environment["GOOGLE_MAPS_API_KEY_IOS"]
-    GMSServices.provideAPIKey(apiKey)
+    if let apiKey = ProcessInfo.processInfo.environment["GOOGLE_MAPS_API_KEY_IOS"] {
+      GMSServices.provideAPIKey(apiKey)
+    } else {
+      fatalError("Google Maps API key not found. Please set the GOOGLE_MAPS_API_KEY_IOS environment variable.")
+    }
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
