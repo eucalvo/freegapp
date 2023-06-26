@@ -4,6 +4,9 @@ name: Flutter build CI
 # Trigger the workflow on push or pull request
 on: [push, pull_request]
 
+env:
+  GOOGLE_MAPS_API_KEY_ANDROID: ${{ secrets.GOOGLE_MAPS_API_KEY_ANDROID }}
+
 #A workflow run is made up of one or more jobs. Jobs run in parallel by default.
 jobs:
 
