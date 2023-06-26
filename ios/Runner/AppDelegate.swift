@@ -11,7 +11,7 @@ import GoogleMaps
     GeneratedPluginRegistrant.register(with: self)
 
     let apiKey = ProcessInfo.processInfo.environment["GOOGLE_MAPS_API_KEY_IOS"]
-    GMSServices.provideAPIKey(apiKey!)
+    GMSServices.provideAPIKey(apiKey)
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
