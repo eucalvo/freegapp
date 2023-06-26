@@ -1,7 +1,6 @@
 import UIKit
 import Flutter
 import GoogleMaps
-import dotenv
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -11,10 +10,7 @@ import dotenv
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
 
-    let dotenv = Dotenv()
-    dotenv.load()
-
-    let apiKey = dotenv["GOOGLE_MAPS_API_KEY_IOS"]
+    let apiKey = ProcessInfo.processInfo.environment["GOOGLE_MAPS_API_KEY_IOS"]
     GMSServices.provideAPIKey(apiKey!)
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
